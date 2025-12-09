@@ -1,9 +1,5 @@
 # Ohara - Leitor de Mangá Local
 
-## Membros do Grupo
-- Ítalo Dell Areti
-- Raquel Gonçalves Rosa
-
 ## Descrição do Sistema
 
 Sistema web para leitura de mangás organizados localmente. O Ohara escaneia estruturas de pastas contendo mangás, organiza automaticamente por capítulos e oferece uma interface intuitiva para leitura com acompanhamento de progresso.
