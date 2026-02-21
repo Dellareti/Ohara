@@ -1,34 +1,34 @@
-# Ohara - Leitor de Mangá Local
+# Ohara - Local Manga Reader
 
-## Descrição do Sistema
+## System Description
 
-Sistema web para leitura de mangás organizados localmente. O Ohara escaneia estruturas de pastas contendo mangás, organiza automaticamente por capítulos e oferece uma interface intuitiva para leitura com acompanhamento de progresso.
+Web system for reading locally organized manga. Ohara scans folder structures containing manga, automatically organizes them by chapters, and offers an intuitive interface for reading with progress tracking.
 
-**Funcionalidades principais:**
-- Escaneamento automático de bibliotecas de mangás
-- Organização automática por mangás e capítulos
-- Interface de leitura responsiva com navegação por páginas
-- Sistema de cache híbrido para alta performance
-- Acompanhamento de progresso de leitura
-- Servir de imagens com validação de segurança
+**Key Features:**
+- Automatic scanning of manga libraries
+- Automatic organization by manga and chapters
+- Responsive reading interface with page navigation
+- Hybrid cache system for high performance
+- Reading progress tracking
+- Image serving with security validation
 
 ## Screenshots
 
 <div align="center">
 
-### Interface Principal
-![Tela Principal](imagens/1.png)
+### Main Interface
+![Main Screen](imagens/1.png)
 
-### Biblioteca de Mangás
-![Biblioteca](imagens/3.png)
+### Manga Library
+![Library](imagens/3.png)
 
-### Navegação de Capítulos
-![Navegação](imagens/4.png)
+### Chapter Navigation
+![Navigation](imagens/4.png)
 
-### Página de Leitura
-![Leitura](imagens/6.png)
+### Reading Page
+![Reading](imagens/6.png)
 
-### Configurações
+### Settings
 ![Config](imagens/8.png)
 
 ### Manual
@@ -36,39 +36,39 @@ Sistema web para leitura de mangás organizados localmente. O Ohara escaneia est
 
 </div>
 
-## Demonstração
+## Demo
 
-[![Vídeo de Demonstração](imagens/1.png)](ohara.mp4)
+[![Demo Video](imagens/1.png)](https://drive.google.com/file/d/1bKGaJUDB9N8PcIlHpFAIDg3FMZxMzKZJ/view?usp=sharing)
 
-*Clique na imagem acima para assistir ao vídeo de demonstração do sistema*
+*Click the image above to watch the system demonstration video*
 
-## Tecnologias Utilizadas
+## Technologies Used
 
 **Frontend:**
 - Vue.js 3 (Composition API)
-- Vue Router 4 - Roteamento
-- Pinia - Gerenciamento de estado
-- Vite - Build tool e dev server
-- Axios - Cliente HTTP
+- Vue Router 4 - Routing
+- Pinia - State management
+- Vite - Build tool and dev server
+- Axios - HTTP Client
 
 **Backend:**
-- FastAPI - Framework web Python
-- Uvicorn - Servidor ASGI
-- Pydantic - Validação de dados
+- FastAPI - Python web framework
+- Uvicorn - ASGI Server
+- Pydantic - Data validation
 - Python 3.10+
 
-**Armazenamento:**
-- JSON - Dados e cache local
-- LocalStorage - Configurações do usuário
+**Storage:**
+- JSON - Data and local cache
+- LocalStorage - User settings
 
-## Como Executar
+## How to Run
 
-### Pré-requisitos
+### Prerequisites
 - Python 3.10+
-- Node.js 18+ e npm
+- Node.js 18+ and npm
 - Git
 
-### 1. Clonar Repositório
+### 1. Clone Repository
 ```sh
 git clone git@github.com:Dellareti/ohara.git
 cd ohara
@@ -94,127 +94,125 @@ npm run dev
 ```
 **Frontend:** http://localhost:5173
 
-## Estrutura da Biblioteca
+## Library Structure
 
-O Ohara funciona esperando esse tipo de organização, e recomenda-se:
+Ohara expects this type of organization, and it is recommended:
 
 ```
-biblioteca/
+library/
 ├── Berserk/
-│   ├── capa.jpg                    # Thumbnail (opcional)
-│   ├── Capítulo 1/
+│   ├── cover.jpg                   # Thumbnail (optional)
+│   ├── Chapter 1/
 │   │   ├── 001.jpg
 │   │   ├── 002.jpg
 │   │   └── 003.jpg
-│   └── Capítulo 2/
+│   └── Chapter 2/
 │       └── ...
 ├── One Piece/
-│   ├── Cap 1/
-│   └── Cap 2/
+│   ├── Ch 1/
+│   └── Ch 2/
 └── Hunter x Hunter/
     ├── Ch 1/
     └── Ch 2/
 ```
 
-**Formatos suportados:**
-- Imagens: JPG, JPEG, PNG, GIF, WebP, BMP
-- Qualquer nome de pasta é aceito
-- Detecção automática de capítulos
+**Supported Formats:**
+- Images: JPG, JPEG, PNG, GIF, WebP, BMP
+- Any folder name is accepted
+- Automatic chapter detection
 
-## Arquitetura
+## Architecture
 
 ### Backend (FastAPI)
-- **MangaScanner**: Escaneia e indexa bibliotecas
-- **SimpleCache**: Cache inteligente baseado em timestamps
-- **LibraryState**: Estado global da biblioteca
-- **API REST**: Endpoints seguros para comunicação
-- **Image Server**: Servir imagens com validação
+- **MangaScanner**: Scans and indexes libraries
+- **SimpleCache**: Intelligent cache based on timestamps
+- **LibraryState**: Global library state
+- **REST API**: Secure endpoints for communication
+- **Image Server**: Serves images with validation
 
 ### Frontend (Vue.js)
 - **Stores (Pinia)**: Library, Reader, Settings
 - **Components**: Library, Reader, Settings, Manual
-- **Services**: API client com interceptadores
-- **Router**: Navegação com guards
+- **Services**: API client with interceptors
+- **Router**: Navigation with guards
 
-## Principais Endpoints
+## Main Endpoints
 
-### Biblioteca
-- `POST /api/scan-library` - Escanear biblioteca
-- `GET /api/library` - Obter biblioteca atual
-- `GET /api/validate-path` - Validar caminho
+### Library
+- `POST /api/scan-library` - Scan library
+- `GET /api/library` - Get current library
+- `GET /api/validate-path` - Validate path
 
-### Mangás e Capítulos
-- `GET /api/manga/{manga_id}` - Detalhes do mangá
-- `GET /api/manga/{manga_id}/chapter/{chapter_id}` - Páginas do capítulo
+### Manga and Chapters
+- `GET /api/manga/{manga_id}` - Manga details
+- `GET /api/manga/{manga_id}/chapter/{chapter_id}` - Chapter pages
 
-### Progresso
-- `POST /api/progress/{manga_id}/{chapter_id}` - Salvar progresso
-- `GET /api/progress/{manga_id}` - Obter progresso
+### Progress
+- `POST /api/progress/{manga_id}/{chapter_id}` - Save progress
+- `GET /api/progress/{manga_id}` - Get progress
 
-### Utilitários
-- `GET /api/image?path=` - Servir imagens
-- `GET /api/cache/info` - Status do cache
+### Utilities
+- `GET /api/image?path=` - Serve images
+- `GET /api/cache/info` - Cache status
 - `GET /health` - Health check
 
 ## Performance
 
-### Cache Híbrido
-- **Detecta mudanças**: Apenas reprocessa arquivos modificados
-- **90% mais rápido**: Em re-escaneamentos
-- **Inteligente**: Baseado em timestamps de modificação
+### Hybrid Cache
+- **Change detection**: Only reprocesses modified files
+- **90% faster**: On re-scans
+- **Intelligent**: Based on modification timestamps
 
-
-## Testes
+## Tests
 
 ```bash
-# Backend - Todos os testes
+# Backend - All tests
 cd backend
 pytest
 ```
 
-# Com cobertura
+# With coverage
 ```bash
 pytest --cov=app --cov-report=html
 ```
 
-# Testes específicos
+# Specific tests
 ```bash
 pytest tests/unit/api/
 pytest tests/unit/models/test_manga.py
-
 ```
 
 ## Troubleshooting
 
-### Problemas Comuns
+### Common Issues
 
-** "Pasta não contém subdiretórios"**
-- Verifique se há pastas de mangás na biblioteca
-- Certifique-se de que mangás têm subpastas de capítulos
+**"Folder contains no subdirectories"**
+- Check that there are manga folders in the library
+- Make sure manga folders have chapter subfolders
 
-** "Caminho não encontrado"**
-- Confirme se o caminho existe e está correto
-- Verifique permissões de leitura
-- Evite caracteres especiais no caminho
+**"Path not found"**
+- Confirm the path exists and is correct
+- Check read permissions
+- Avoid special characters in the path
 
-** "Imagens não carregam"**
-- Confirme formatos suportados (JPG, PNG, GIF, WebP)
-- Verifique se backend está rodando na porta 8000
-- Limpe cache: acesse http://localhost:8000/api/cache/clear
+**"Images not loading"**
+- Confirm supported formats (JPG, PNG, GIF, WebP)
+- Check that the backend is running on port 8000
+- Clear cache: go to http://localhost:8000/api/cache/clear
 
-** "Performance lenta"**
-- Verifique cache: http://localhost:8000/api/cache/info
-- Evite bibliotecas em drives de rede
-- Considere usar SSD para bibliotecas grandes
+**"Slow performance"**
+- Check cache: http://localhost:8000/api/cache/info
+- Avoid libraries on network drives
+- Consider using an SSD for large libraries
 
-### Debug e Logs
+### Debug and Logs
 ```bash
-# Status do sistema
+# System status
 curl http://localhost:8000/health
 curl http://localhost:8000/api/cache/info
 curl http://localhost:8000/api/debug
 
-# Logs detalhados
+# Detailed logs
 cd backend
-python -m app.main  # Logs aparecem no terminal
+python -m app.main  # Logs appear in the terminal
 ```
