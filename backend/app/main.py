@@ -15,44 +15,44 @@ from log_config import log_config
 
 logger = logging.getLogger(__name__)
 
-# Inicializar o MangaScanner e carregar configurações
+# Initialize MangaScanner and load settings
 scanner = MangaScanner()
 library_state.load_from_file()
 
-# Configuração da aplicação FastAPI
+# FastAPI application configuration
 app = FastAPI(
     title="Ohara Manga Reader API",
     description="""
-    API para gerenciamento e leitura de mangás.
+    API for manga library management and reading.
     
-    ## Funcionalidades
+    ## Features
     
-    * **Biblioteca**: Escaneamento e gerenciamento de bibliotecas de mangás
-    * **Mangás**: Visualização de detalhes e capítulos de mangás
-    * **Leitura**: Sistema de progresso de leitura e navegação
-    * **Cache**: Sistema de cache híbrido para melhor performance
-    * **Imagens**: Servidor de imagens com validação de segurança
-    * **Debug**: Ferramentas de debug e monitoramento
+    * **Library**: Scanning and management of manga libraries
+    * **Manga**: Viewing manga details and chapters
+    * **Reader**: Reading progress system and navigation
+    * **Cache**: Hybrid cache system for better performance
+    * **Images**: Image server with security validation
+    * **Debug**: Debug and monitoring tools
     
-    ## Estrutura de Dados
+    ## Data Structure
     
-    Os mangás são organizados em:
-    - **Biblioteca** → contém múltiplos mangás
-    - **Mangá** → contém múltiplos capítulos  
-    - **Capítulo** → contém múltiplas páginas
-    - **Página** → arquivo de imagem individual
+    Manga is organized as:
+    - **Library** → contains multiple manga titles
+    - **Manga** → contains multiple chapters  
+    - **Chapter** → contains multiple pages
+    - **Page** → individual image file
     
-    ## Configuração
+    ## Setup
     
-    Para usar a API:
-    1. Configure uma biblioteca com `POST /api/scan-library`
-    2. Navegue pelos mangás disponíveis com `GET /api/library`
-    3. Leia mangás específicos com `GET /api/manga/{manga_id}`
+    To use the API:
+    1. Configure a library with `POST /api/scan-library`
+    2. Browse available manga with `GET /api/library`
+    3. Read specific manga with `GET /api/manga/{manga_id}`
     """,
     version="2.0.0",
     contact={
         "name": "Ohara Development Team",
-        "url": "https://github.com/seu-usuario/ohara",
+        "url": "https://github.com/Dellareti/ohara",
     },
     license_info={
         "name": "MIT",
@@ -60,7 +60,7 @@ app = FastAPI(
     },
 )
 
-# Configuração CORS
+# CORS configuration
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -76,7 +76,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Registrar routers dos módulos
+# Register module routers
 app.include_router(reader_router, prefix="", tags=["reader"])
 app.include_router(library_router, prefix="", tags=["library"])
 app.include_router(manga_router, prefix="", tags=["manga"])
@@ -85,19 +85,19 @@ app.include_router(debug_router, prefix="", tags=["debug"])
 app.include_router(image_router, prefix="", tags=["assets"])
 
 
-@app.get("/", tags=["root"], summary="Informações da API")
+@app.get("/", tags=["root"], summary="API Information")
 async def root():
     """
-    Endpoint raiz com informações básicas da API.
+    Root endpoint with basic API information.
     
     Returns:
-        dict: Informações sobre a API e seu status
+        dict: Information about the API and its status
     """
     
     return {
         "name": "Ohara Manga Reader API",
         "version": "2.0.0",
-        "description": "API para gerenciamento e leitura de mangás",
+        "description": "API for manga library management and reading",
         "status": "online",
         "library_configured": library_state.current_path is not None,
         "current_library": library_state.current_path,
@@ -115,10 +115,10 @@ async def root():
 @app.get("/health", tags=["health"], summary="Health check")
 async def health_check():
     """
-    Endpoint de health check para monitoramento.
+    Health check endpoint for monitoring.
     
     Returns:
-        dict: Status da aplicação e dependências
+        dict: Application and dependencies status
     """
     
     return {
@@ -129,17 +129,17 @@ async def health_check():
     }
 
 
-@app.get("/api/test", tags=["test"], summary="Teste da API")
+@app.get("/api/test", tags=["test"], summary="API Test")
 async def test_api():
     """
-    Endpoint de teste para verificar funcionamento básico da API.
+    Test endpoint to verify basic API functionality.
     
     Returns:
-        dict: Confirmação de funcionamento
+        dict: Confirmation of operation
     """
     
     return {
-        "message": "API funcionando corretamente!",
+        "message": "API is working correctly!",
         "timestamp": "2024-01-01T00:00:00Z",
         "test": "success"
     }

@@ -34,7 +34,7 @@ def chapter(pages):
 @pytest.fixture
 def chapters():
     chapters = []
-    for i in range(75, 81):  # 6 capítulos
+    for i in range(75, 81):  # 6 chapters
         chapter = Chapter(
             id=f"test-manga-ch-{i}",
             name=f"Chapter {i}",
@@ -163,7 +163,7 @@ class TestEndpoint:
             await get_chapter("test-manga", "test-chapter")
 
         assert exc_info.value.status_code == 400
-        assert exc_info.value.detail == "Nenhuma biblioteca configurada"
+        assert exc_info.value.detail == "No library configured"
 
     @pytest.mark.asyncio
     async def test_get_manga_chapters_no_library_configured(self, mock_library_state):
@@ -175,7 +175,7 @@ class TestEndpoint:
             await get_manga_chapters("test-manga")
 
         assert exc_info.value.status_code == 400
-        assert exc_info.value.detail == "Nenhuma biblioteca configurada"
+        assert exc_info.value.detail == "No library configured"
 
     @pytest.mark.asyncio
     async def test_save_reading_progress_valid_data(self):
@@ -193,7 +193,7 @@ class TestEndpoint:
                     )
 
                     assert "message" in result
-                    assert result["message"] == "Progresso salvo com sucesso"
+                    assert result["message"] == "Progress saved successfully"
 
                     assert "progress" in result
                     progress = result["progress"]
@@ -214,7 +214,7 @@ class TestEndpoint:
                     result = await save_reading_progress(
                         manga_id="test-manga",
                         chapter_id="test-chapter",
-                        current_page=19,  # Última página
+                        current_page=19,  # Last page
                         total_pages=20
                     )
 
@@ -234,7 +234,7 @@ class TestEndpoint:
             assert result["manga_id"] == "test-manga"
             assert result["chapters"] == {}
             assert result["manga_info"] == {}
-            assert result["message"] == "Nenhum progresso encontrado"
+            assert result["message"] == "No progress found"
 
     @pytest.mark.asyncio
     async def test_get_manga_progress_existing_file(self):
@@ -275,7 +275,7 @@ class TestEndpoint:
             assert result["manga_id"] == "test-manga"
             assert result["chapter_id"] == "test-chapter"
             assert result["progress"] is None
-            assert result["message"] == "Nenhum progresso encontrado"
+            assert result["message"] == "No progress found"
 
     @pytest.mark.asyncio
     async def test_get_chapter_progress_found(self):
@@ -314,7 +314,7 @@ class TestErrorHandling:
                 await save_reading_progress("test", "test", 1, 10)
 
             assert exc_info.value.status_code == 500
-            assert exc_info.value.detail == "Erro ao salvar progresso: Permission denied"
+            assert exc_info.value.detail == "Error saving progress: Permission denied"
 
     @pytest.mark.asyncio
     async def test_get_progress_file_error(self):
@@ -326,7 +326,7 @@ class TestErrorHandling:
                     await get_manga_progress("test-manga")
 
                 assert exc_info.value.status_code == 500
-                assert exc_info.value.detail == "Erro ao carregar progresso: Read error"
+                assert exc_info.value.detail == "Error loading progress: Read error"
 
     def test_invalid_input(self):
         with pytest.raises(AttributeError):

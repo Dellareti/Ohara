@@ -9,136 +9,96 @@ logger = logging.getLogger(__name__)
 scanner = MangaScanner()
 
 
-@router.get("/api/cache/info", tags=["cache"], summary="Informações do cache")
+@router.get("/api/cache/info", tags=["cache"], summary="Cache information")
 async def get_cache_info():
     """
-    Retorna informações sobre o estado atual do cache.
-    
+    Returns information about the current cache state.
+
     Returns:
-        dict: Informações detalhadas sobre o cache
+        dict: Detailed cache information
     """
-    
     if not library_state.current_path:
         return {
             "cache_enabled": True,
             "current_library": None,
             "cache_info": {"exists": False}
         }
-    
+
     try:
         cache_info = scanner.get_cache_info(library_state.current_path)
-        
         return {
             "cache_enabled": scanner.cache_enabled,
             "current_library": library_state.current_path,
             "cache_info": cache_info,
-            "scanner_version": "Cache Simples v2.0"
+            "scanner_version": "Simple Cache v2.0"
         }
-        
     except Exception as e:
         return {
             "cache_enabled": scanner.cache_enabled,
             "current_library": library_state.current_path,
             "cache_info": {"exists": False, "error": str(e)},
-            "scanner_version": "Cache Simples v2.0"
+            "scanner_version": "Simple Cache v2.0"
         }
 
 
-@router.post("/api/cache/clear", tags=["cache"], summary="Limpar cache")
+@router.post("/api/cache/clear", tags=["cache"], summary="Clear cache")
 async def clear_cache():
     """
-    Limpa o cache da biblioteca atual.
-    
+    Clears the cache for the current library.
+
     Returns:
-        dict: Resultado da operação de limpeza
-        
+        dict: Result of the clear operation
+
     Raises:
-        HTTPException: Se nenhuma biblioteca estiver configurada
+        HTTPException: If no library is configured
     """
-    
     if not library_state.current_path:
-        raise HTTPException(
-            status_code=400,
-            detail="Nenhuma biblioteca configurada"
-        )
-    
+        raise HTTPException(status_code=400, detail="No library configured")
+
     try:
         success = scanner.clear_cache(library_state.current_path)
-        
         if success:
-            return {
-                "message": "Cache limpo com sucesso",
-                "library_path": library_state.current_path,
-                "status": "cleared"
-            }
+            return {"message": "Cache cleared successfully", "library_path": library_state.current_path, "status": "cleared"}
         else:
-            return {
-                "message": "Nenhum cache encontrado para limpar",
-                "library_path": library_state.current_path,
-                "status": "no_cache"
-            }
-            
+            return {"message": "No cache found to clear", "library_path": library_state.current_path, "status": "no_cache"}
     except Exception as e:
-        logger.warning(f"Erro ao limpar cache: {str(e)}")
-        raise HTTPException(
-            status_code=500,
-            detail=f"Erro ao limpar cache: {str(e)}"
-        )
+        logger.warning(f"Error clearing cache: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error clearing cache: {str(e)}")
 
 
-@router.post("/api/cache/disable", tags=["cache"], summary="Desabilitar cache")
+@router.post("/api/cache/disable", tags=["cache"], summary="Disable cache")
 async def disable_cache():
     """
-    Desabilita o sistema de cache.
-    
+    Disables the cache system.
+
     Returns:
-        dict: Confirmação da desabilitação
-        
+        dict: Confirmation of disabling
+
     Raises:
-        HTTPException: Se ocorrer erro durante a operação
+        HTTPException: If an error occurs during the operation
     """
-    
     try:
         scanner.disable_cache()
-        
-        return {
-            "message": "Cache desabilitado",
-            "cache_enabled": False,
-            "status": "disabled"
-        }
-        
+        return {"message": "Cache disabled", "cache_enabled": False, "status": "disabled"}
     except Exception as e:
-        logger.warning(f"Erro ao desabilitar cache: {str(e)}")
-        raise HTTPException(
-            status_code=500,
-            detail=f"Erro ao desabilitar cache: {str(e)}"
-        )
+        logger.warning(f"Error disabling cache: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error disabling cache: {str(e)}")
 
 
-@router.post("/api/cache/enable", tags=["cache"], summary="Habilitar cache")
+@router.post("/api/cache/enable", tags=["cache"], summary="Enable cache")
 async def enable_cache():
     """
-    Habilita o sistema de cache.
-    
+    Enables the cache system.
+
     Returns:
-        dict: Confirmação da habilitação
-        
+        dict: Confirmation of enabling
+
     Raises:
-        HTTPException: Se ocorrer erro durante a operação
+        HTTPException: If an error occurs during the operation
     """
-    
     try:
         scanner.enable_cache()
-        
-        return {
-            "message": "Cache habilitado",
-            "cache_enabled": True,
-            "status": "enabled"
-        }
-        
+        return {"message": "Cache enabled", "cache_enabled": True, "status": "enabled"}
     except Exception as e:
-        logger.warning(f"Erro ao habilitar cache: {str(e)}")
-        raise HTTPException(
-            status_code=500,
-            detail=f"Erro ao habilitar cache: {str(e)}"
-        )
+        logger.warning(f"Error enabling cache: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error enabling cache: {str(e)}")

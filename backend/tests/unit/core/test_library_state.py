@@ -119,12 +119,10 @@ class TestLibraryStateEdgeCases:
     def test_multiple_clear_calls(self, configured_library_state):
         assert configured_library_state.is_configured()
 
-        # Múltiplas chamadas
         configured_library_state.clear()
         configured_library_state.clear()
         configured_library_state.clear()
 
-        # Estado deve permanecer consistente
         assert not configured_library_state.is_configured()
         assert configured_library_state.current_path is None
         assert not configured_library_state.validate_current_path()
@@ -139,10 +137,8 @@ class TestLibraryStateEdgeCases:
     def test_is_configured_state_consistency(self, library_state, temp_directory):
         assert not library_state.is_configured()
 
-        # Após definir caminho
         library_state.current_path = str(temp_directory)
         assert library_state.is_configured()
 
-        # Após limpar
         library_state.current_path = None
         assert not library_state.is_configured()

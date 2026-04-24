@@ -28,10 +28,10 @@ def list_of_pages():
 def single_chapter(list_of_pages):
     return Chapter(
         id="one-piece-ch-1001",
-        name="Capítulo 1001",
+        name="Chapter 1001",
         number=1001.0,
         volume=100,
-        path="/manga/One Piece/Capítulo 1001",
+        path="/manga/One Piece/Chapter 1001",
         pages=list_of_pages,
         page_count=len(list_of_pages)
     )
@@ -43,9 +43,9 @@ def list_of_chapters(list_of_pages):
     for i in range(1, 4):
         chapter = Chapter(
             id=f"one-piece-ch-{i}",
-            name=f"Capítulo {i}",
+            name=f"Chapter {i}",
             number=float(i),
-            path=f"/manga/One Piece/Capítulo {i}",
+            path=f"/manga/One Piece/Chapter {i}",
             pages=list_of_pages[:i],
             page_count=i
         )
@@ -144,7 +144,7 @@ class TestChapter:
 
     def test_creation_complete(self, single_chapter):
         assert single_chapter.id == "one-piece-ch-1001"
-        assert single_chapter.name == "Capítulo 1001"
+        assert single_chapter.name == "Chapter 1001"
         assert single_chapter.number == 1001.0
         assert single_chapter.volume == 100
         assert len(single_chapter.pages) == 3
@@ -235,20 +235,17 @@ class TestLibrary:
     def test_add_duplicate_manga(self, single_manga):
         library = Library()
 
-        # Adicionar primeira vez
         library.add_manga(single_manga)
         assert len(library.mangas) == 1
 
-        # Criar versão modificada do mesmo mangá
         modified_manga = Manga(
-            id=single_manga.id,  # Mesmo ID
+            id=single_manga.id,
             title="Modified Title",
             path="/different/path",
             chapter_count=10,
             total_pages=100
         )
 
-        # Adicionar novamente - deve substituir
         library.add_manga(modified_manga)
 
         assert len(library.mangas) == 1

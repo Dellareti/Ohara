@@ -15,23 +15,23 @@ class Chapter(BaseModel):
         json_schema_extra={
             "example": {
                 "id": "one-piece-ch-1001",
-                "name": "Capítulo 1001",
+                "name": "Chapter 1001",
                 "number": 1001,
                 "volume": 100,
-                "path": "/path/to/manga/One Piece/Capítulo 1001",
+                "path": "/path/to/manga/One Piece/Chapter 1001",
                 "page_count": 19,
                 "pages": []
             }
         }
     )
-    
-    id: str = Field(..., description="ID único do capítulo")
-    name: str = Field(..., description="Nome do capítulo")
-    number: Optional[float] = Field(None, description="Número do capítulo")
-    volume: Optional[int] = Field(None, description="Número do volume")
-    path: str = Field(..., description="Caminho da pasta do capítulo")
-    pages: List[Page] = Field(default_factory=list, description="Lista de páginas")
-    page_count: int = Field(0, description="Número total de páginas")
+
+    id: str = Field(..., description="Unique chapter ID")
+    name: str = Field(..., description="Chapter name")
+    number: Optional[float] = Field(None, description="Chapter number")
+    volume: Optional[int] = Field(None, description="Volume number")
+    path: str = Field(..., description="Chapter folder path")
+    pages: List[Page] = Field(default_factory=list, description="List of pages")
+    page_count: int = Field(0, description="Total number of pages")
     date_added: datetime = Field(default_factory=datetime.now)
 
 class Manga(BaseModel):
@@ -51,30 +51,28 @@ class Manga(BaseModel):
         }
     )
     
-    id: str = Field(..., description="ID único do mangá")
-    title: str = Field(..., description="Título do mangá")
-    path: str = Field(..., description="Caminho da pasta do mangá")
-    thumbnail: Optional[str] = Field(None, description="Caminho da thumbnail")
-    chapters: List[Chapter] = Field(default_factory=list, description="Lista de capítulos")
-    chapter_count: int = Field(0, description="Número total de capítulos")
-    total_pages: int = Field(0, description="Número total de páginas")
-    
-    # Metadados opcionais
+    id: str = Field(..., description="Unique manga ID")
+    title: str = Field(..., description="Manga title")
+    path: str = Field(..., description="Manga folder path")
+    thumbnail: Optional[str] = Field(None, description="Thumbnail path")
+    chapters: List[Chapter] = Field(default_factory=list, description="List of chapters")
+    chapter_count: int = Field(0, description="Total number of chapters")
+    total_pages: int = Field(0, description="Total number of pages")
+
     author: Optional[str] = None
     artist: Optional[str] = None
     status: Optional[str] = None
     genres: List[str] = Field(default_factory=list)
     description: Optional[str] = None
-    
-    # Timestamps
+
     date_added: datetime = Field(default_factory=datetime.now)
     date_modified: datetime = Field(default_factory=datetime.now)
 
 class Library(BaseModel):
     mangas: List[Manga] = Field(default_factory=list)
-    total_mangas: int = Field(0, description="Total de mangás na biblioteca")
-    total_chapters: int = Field(0, description="Total de capítulos")
-    total_pages: int = Field(0, description="Total de páginas")
+    total_mangas: int = Field(0, description="Total manga in the library")
+    total_chapters: int = Field(0, description="Total chapters")
+    total_pages: int = Field(0, description="Total pages")
     last_updated: datetime = Field(default_factory=datetime.now)
     
     def add_manga(self, manga: Manga) -> None:
@@ -106,7 +104,7 @@ class Library(BaseModel):
         self.total_pages = sum(m.total_pages for m in self.mangas)
         self.last_updated = datetime.now()
 
-# Modelos de Request/Response para API
+# API Request/Response Models
 class LibraryResponse(BaseModel):
     library: Library
     message: str = "Success"

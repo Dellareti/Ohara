@@ -153,19 +153,19 @@ class TestMangaScanner:
         scanned_library = scanner.scan_library(library)
 
         for manga in scanned_library.mangas:
-            assert manga.thumbnail, f"Mangá '{manga.title}' não possui thumbnail"
+            assert manga.thumbnail, f"Manga '{manga.title}' has no thumbnail"
 
             thumbnail_path = Path(manga.thumbnail)
-            assert thumbnail_path.exists(), f"Thumbnail '{thumbnail_path}' não existe"
-            assert thumbnail_path.is_file(), f"Thumbnail '{thumbnail_path}' não é um arquivo"
+            assert thumbnail_path.exists(), f"Thumbnail '{thumbnail_path}' does not exist"
+            assert thumbnail_path.is_file(), f"Thumbnail '{thumbnail_path}' is not a file"
             assert thumbnail_path.suffix.lower() in ['.jpg', '.jpeg', '.png', '.webp'], \
-                f"Extensão inválida: {thumbnail_path.suffix} para '{manga.title}'"
+                f"Invalid extension: {thumbnail_path.suffix} for '{manga.title}'"
 
             try:
                 with Image.open(thumbnail_path) as img:
                     img.verify()
             except Exception as e:
-                pytest.fail(f"Thumbnail de '{manga.title}' não é uma imagem válida: {e}")
+                pytest.fail(f"Thumbnail of '{manga.title}' is not a valid image: {e}")
 
             if manga.chapters and manga.chapters[0].pages:
                 expected_first_page = manga.chapters[0].pages[0].path
@@ -178,13 +178,13 @@ class TestMangaScanner:
                         manga.thumbnail == expected_first_page
                         or thumbnail_parent == manga_root
                         or thumbnail_parent in chapter_paths
-                ), f"Thumbnail de '{manga.title}' não é a primeira página nem está na raiz ou em capítulo do mangá"
+                ), f"Thumbnail of '{manga.title}' is neither the first page nor in the root or a chapter of the manga"
 
     def test_scan_library_non_existent_path(self):
         scanner = MangaScanner()
 
-        with pytest.raises(ValueError, match="Biblioteca não encontrada: /pasta/que/nao/existe"):
-            scanner.scan_library("/pasta/que/nao/existe")
+        with pytest.raises(ValueError, match="Library not found: /folder/that/does/not/exist"):
+            scanner.scan_library("/folder/that/does/not/exist")
 
     def test_scan_library_empty_path(self):
         scanner = MangaScanner()

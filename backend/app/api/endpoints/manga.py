@@ -11,39 +11,37 @@ logger = logging.getLogger(__name__)
 scanner = MangaScanner()
 
 
-@router.get("/api/manga/{manga_id}", tags=["manga"], summary="Obter detalhes do mangá")
+@router.get("/api/manga/{manga_id}", tags=["manga"], summary="Get manga details")
 async def get_manga(manga_id: str):
     """
-    Retorna detalhes completos de um mangá específico incluindo capítulos.
-    
+    Returns complete details for a specific manga including chapters.
+
     Args:
-        manga_id: ID único do mangá
-        
+        manga_id: Unique manga ID
+
     Returns:
-        Dados completos do mangá com capítulos e metadados
-        
+        Complete manga data with chapters and metadata
+
     Raises:
-        HTTPException: Se o mangá não for encontrado
+        HTTPException: If the manga is not found
     """
-    
-    # Se não há biblioteca configurada, retornar erro
     if library_state.current_path is None:
         raise HTTPException(
             status_code=400,
-            detail="Nenhuma biblioteca configurada. Configure uma biblioteca primeiro."
+            detail="No library configured. Please configure a library first."
         )
-    
+
     try:
         library = scanner.scan_library(library_state.current_path)
         manga = library.get_manga(manga_id)
-        
+
         if not manga:
             raise HTTPException(
                 status_code=404,
-                detail=f"Mangá '{manga_id}' não encontrado na biblioteca"
+                detail=f"Manga '{manga_id}' not found in library"
             )
-        
-        # Preparar dados do mangá com serialização adequada de datetime
+
+        # Prepare manga data with proper datetime serialization
         manga_data = {
             "id": manga.id,
             "title": manga.title,
@@ -59,8 +57,8 @@ async def get_manga(manga_id: str):
             "date_added": manga.date_added.isoformat() if manga.date_added else None,
             "date_modified": manga.date_modified.isoformat() if manga.date_modified else None
         }
-        
-        # Preparar capítulos com thumbnails
+
+        # Prepare chapters with thumbnails
         chapters_with_thumbnails = []
         for chapter in manga.chapters:
             chapter_summary = {
@@ -72,27 +70,21 @@ async def get_manga(manga_id: str):
                 "date_added": chapter.date_added.isoformat() if chapter.date_added else None,
                 "thumbnail_url": None
             }
-            
-            # Adicionar thumbnail da primeira página
+            # Add thumbnail from first page
             if chapter.pages:
                 first_page_path = chapter.pages[0].path
                 chapter_summary['thumbnail_url'] = create_image_url(first_page_path)
-            
             chapters_with_thumbnails.append(chapter_summary)
-        
+
         manga_data['chapters'] = chapters_with_thumbnails
-        
+
         return JSONResponse(content={
             "manga": manga_data,
-            "message": f"Detalhes do mangá '{manga.title}' carregados",
+            "message": f"Manga '{manga.title}' details loaded",
         })
-        
+
     except HTTPException:
         raise
     except Exception as e:
-        logger.warning(f"Erro ao buscar mangá {manga_id}: {str(e)}")
-        
-        raise HTTPException(
-            status_code=500,
-            detail=f"Erro interno ao buscar mangá: {str(e)}"
-        )
+        logger.warning(f"Error fetching manga {manga_id}: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Internal error fetching manga: {str(e)}")

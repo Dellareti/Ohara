@@ -10,34 +10,34 @@ logger = logging.getLogger(__name__)
 
 class SimpleCache:
     """
-    Cache simples e eficiente para sistema de mangás.
+    Simple and efficient cache for the manga system.
     
-    Funcionalidades essenciais:
-    - Cache de metadados baseado em timestamp
-    - Invalidação automática quando diretório muda
-    - Operações básicas: load, save, clear
+    Core features:
+    - Timestamp-based metadata caching
+    - Automatic invalidation when directory changes
+    - Basic operations: load, save, clear
     """
     
     def __init__(self):
         self.cache_file_name = '.ohara_cache.json'
         
     def load_cache(self, cache_file: Path) -> Dict:
-        """Carregar cache com validação básica"""
+        """Load cache with basic validation"""
         if not cache_file.exists():
             return {}
         
         try:
             cache_data = json.loads(cache_file.read_text(encoding='utf-8'))
             if isinstance(cache_data, dict):
-                logger.info(f"Cache carregado: {len(cache_data)} entradas")
+                logger.info(f"Cache loaded: {len(cache_data)} entries")
                 return cache_data
         except Exception as e:
-            logger.warning(f"Cache inválido, recriando: {e}")
+            logger.warning(f"Invalid cache, recreating: {e}")
         
         return {}
     
     def save_cache(self, cache_file: Path, mangas: List[Manga]) -> None:
-        """Salvar cache com dados essenciais"""
+        """Save cache with essential data"""
         try:
             cache_data = {}
             
@@ -55,13 +55,13 @@ class SimpleCache:
                 encoding='utf-8'
             )
             
-            logger.info(f"Cache salvo: {len(cache_data)} mangás")
+            logger.info(f"Cache saved: {len(cache_data)} manga titles")
             
         except Exception as e:
-            logger.warning(f"Erro ao salvar cache: {e}")
+            logger.warning(f"Error saving cache: {e}")
     
     def is_valid(self, manga_dir: Path, cache_entry: Optional[Dict]) -> bool:
-        """Verificar se cache é válido baseado em timestamp do diretório"""
+        """Check if cache is valid based on directory timestamp"""
         if not cache_entry:
             return False
         
@@ -73,28 +73,28 @@ class SimpleCache:
             return False
     
     def restore_manga(self, manga_data: Dict) -> Optional[Manga]:
-        """Restaurar mangá do cache"""
+        """Restore manga from cache"""
         try:
             return Manga(**manga_data)
         except Exception as e:
-            logger.warning(f"Erro ao restaurar mangá: {e}")
+            logger.warning(f"Error restoring manga: {e}")
             return None
     
     def clear_cache(self, library_path: str) -> bool:
-        """Limpar cache"""
+        """Clear cache"""
         try:
             cache_file = Path(library_path) / self.cache_file_name
             if cache_file.exists():
                 cache_file.unlink()
-                logger.info(f"Cache limpo: {cache_file}")
+                logger.info(f"Cache cleared: {cache_file}")
                 return True
             return False
         except Exception as e:
-            logger.warning(f"Erro ao limpar cache: {e}")
+            logger.warning(f"Error clearing cache: {e}")
             return False
     
     def get_cache_info(self, library_path: str) -> Dict:
-        """Informações básicas do cache"""
+        """Basic cache information"""
         cache_file = Path(library_path) / self.cache_file_name
         
         if not cache_file.exists():
@@ -110,10 +110,10 @@ class SimpleCache:
                 "entries": len(cache_data)
             }
         except Exception:
-            return {"exists": True, "error": "Erro ao ler cache"}
+            return {"exists": True, "error": "Error reading cache"}
     
     def _create_cache_data(self, manga: Manga) -> Dict:
-        """Criar dados de cache otimizados"""
+        """Create optimized cache data"""
         chapters_data = []
         
         for chapter in manga.chapters:

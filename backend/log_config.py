@@ -3,11 +3,11 @@ import uvicorn
 
 class ColorFormatter(logging.Formatter):
     COLOR_MAP = {
-        "DEBUG": "\033[0;36m",     # ciano
-        "INFO": "\033[0;32m",      # verde
-        "WARNING": "\033[0;33m",   # amarelo
-        "ERROR": "\033[0;31m",     # vermelho
-        "CRITICAL": "\033[1;41m",  # fundo vermelho
+        "DEBUG": "\033[0;36m",     # cyan
+        "INFO": "\033[0;32m",      # green
+        "WARNING": "\033[0;33m",   # yellow
+        "ERROR": "\033[0;31m",     # red
+        "CRITICAL": "\033[1;41m",  # red background
     }
 
     RESET = "\033[0m"
