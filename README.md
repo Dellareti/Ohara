@@ -17,28 +17,28 @@ Web system for reading locally organized manga. Ohara scans folder structures co
 <div align="center">
 
 ### Main Interface
-![Main Screen](imagens/1.png)
+![Main Screen](images/1.png)
 
 ### Manga Library
-![Library](imagens/3.png)
+![Library](images/3.png)
 
 ### Chapter Navigation
-![Navigation](imagens/4.png)
+![Navigation](images/4.png)
 
 ### Reading Page
-![Reading](imagens/6.png)
+![Reading](images/6.png)
 
 ### Settings
-![Config](imagens/8.png)
+![Config](images/8.png)
 
 ### Manual
-![Manual](imagens/9.png)
+![Manual](images/9.png)
 
 </div>
 
 ## Demo
 
-[![Demo Video](imagens/1.png)](https://drive.google.com/file/d/1bKGaJUDB9N8PcIlHpFAIDg3FMZxMzKZJ/view?usp=sharing)
+[![Demo Video](images/1.png)](https://drive.google.com/file/d/1bKGaJUDB9N8PcIlHpFAIDg3FMZxMzKZJ/view?usp=sharing)
 
 *Click the image above to watch the system demonstration video*
 
@@ -120,6 +120,28 @@ library/
 - Images: JPG, JPEG, PNG, GIF, WebP, BMP
 - Any folder name is accepted
 - Automatic chapter detection
+
+## Supported Languages
+
+Ohara automatically detects chapter and volume numbers from folder names written in 11 languages. Libraries with mixed-language folders are supported.
+
+| Language   | Chapter format                  | Abbreviation   | Volume + Chapter             |
+|------------|---------------------------------|----------------|------------------------------|
+| English    | `Chapter 1`                     | `Ch. 1`        | `Vol. 1 Ch. 2`               |
+| Portuguese | `Capítulo 1`                    | `Cap. 1`       | `Tomo 1 Capítulo 2`          |
+| Spanish    | `Capítulo 1`                    | `Cap. 1`       | `Tomo 1 Capítulo 2`          |
+| French     | `Chapitre 1`                    | `Chap. 1`      | `Tome 1 Chapitre 2`          |
+| German     | `Kapitel 1`                     | `Kap. 1`       | `Band 1 Kapitel 2`           |
+| Italian    | `Capitolo 1`                    | `Cap. 1`       | `Tomo 1 Capitolo 2`          |
+| Russian    | `Глава 1`                       | `Гл. 1`        | `Том 1 Глава 2`              |
+| Japanese   | `第1話`, `第1章`, `1話`          | —              | —                            |
+| Chinese    | `第1章`, `第1回`, `第1话`        | —              | —                            |
+| Hindi      | `अध्याय 1`, `भाग 1`              | —              | —                            |
+| Arabic     | `الفصل 1`, `فصل 1`              | —              | —                            |
+
+**Cover filenames recognized** (optional, placed in the manga root folder): `cover`, `thumb`, `thumbnail`, `capa` (PT), `portada` (ES), `couverture` (FR), `umschlag` (DE), `copertina` (IT), `обложка` (RU), `表紙` (JA), `封面` (ZH), `आवरण` (HI), `غلاف` (AR).
+
+Numeric-only folder names like `001`, `1.5`, or `1 - Title` are also recognized in any language.
 
 ## Architecture
 

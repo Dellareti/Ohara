@@ -35,3 +35,6 @@ coverage.xml
 
 # Archive files
 backend/last_library_path.txt
+
+# Ohara generated cache
+.ohara_cache.json
