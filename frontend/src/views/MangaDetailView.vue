@@ -3,13 +3,13 @@
     <!-- Loading State -->
     <div v-if="loading" class="loading-state">
       <div class="spinner"></div>
-      <p>Carregando detalhes do mangá...</p>
+      <p>Loading manga details...</p>
     </div>
 
     <ErrorState
       v-if="error"
       :message="error"
-      title="Erro ao Carregar Mangá"
+      title="Error Loading Manga"
       severity="high"
       :retryable="true"
       :on-retry="loadManga"
@@ -34,7 +34,7 @@
 
           <!-- Quick Action - Continue Reading -->
           <button @click="continueReading" class="continue-reading-btn">
-            Continuar Leitura
+            Continue Reading
           </button>
         </div>
 
@@ -49,7 +49,7 @@
 
           <!-- Genres -->
           <div v-if="manga.genres && manga.genres.length" class="genres-section">
-            <span class="genres-label">Gêneros:</span>
+            <span class="genres-label">Genres:</span>
             <div class="genres-list">
               <span v-for="genre in manga.genres" :key="genre" class="genre-tag">
                 {{ genre }}
@@ -61,21 +61,21 @@
           <div class="stats-section">
             <div class="stat-item">
               <div class="stat-value">{{ manga.chapter_count }}</div>
-              <div class="stat-label">Capítulos</div>
+              <div class="stat-label">Chapters</div>
             </div>
             <div class="stat-item">
               <div class="stat-value">{{ manga.total_pages }}</div>
-              <div class="stat-label">Páginas</div>
+              <div class="stat-label">Pages</div>
             </div>
             <div class="stat-item">
               <div class="stat-value">{{ readProgress }}%</div>
-              <div class="stat-label">Progresso</div>
+              <div class="stat-label">Progress</div>
             </div>
           </div>
 
           <!-- Description -->
           <div v-if="manga.description" class="description-section">
-            <h3>Descrição</h3>
+            <h3>Description</h3>
             <p class="description-text">{{ manga.description }}</p>
           </div>
         </div>
@@ -85,25 +85,25 @@
       <div class="chapters-panel">
         <!-- Chapters Header -->
         <div class="chapters-header">
-          <h2>Capítulos ({{ manga.chapter_count }})</h2>
-          
+          <h2>Chapters ({{ manga.chapter_count }})</h2>
+
           <!-- Filter Controls -->
           <div class="filter-controls">
-            <input 
-              v-model="searchTerm" 
-              type="text" 
-              placeholder="Buscar capítulo..."
+            <input
+              v-model="searchTerm"
+              type="text"
+              placeholder="Search chapter..."
               class="search-input"
             />
-            
+
             <!-- Refresh Button -->
-            <button @click="refreshChapters" class="refresh-btn" title="Atualizar capítulos">
-              Atualizar capítulos
+            <button @click="refreshChapters" class="refresh-btn" title="Refresh chapters">
+              Refresh chapters
             </button>
-            
+
             <select v-model="sortOrder" class="sort-select">
-              <option value="desc">Mais Recente Primeiro</option>
-              <option value="asc">Mais Antigo Primeiro</option>
+              <option value="desc">Newest First</option>
+              <option value="asc">Oldest First</option>
             </select>
           </div>
         </div>
@@ -136,12 +136,12 @@
               <div class="chapter-title">{{ chapter.name }}</div>
               <div class="chapter-meta">
                 <span v-if="chapter.number" class="chapter-number">
-                Capítulo {{ chapter.number }}
+                Chapter {{ chapter.number }}
                 </span>
                 <span v-if="chapter.volume" class="volume-number">
                   Vol. {{ chapter.volume }}
                 </span>
-                <span class="page-count">{{ chapter.page_count }} páginas</span>
+                <span class="page-count">{{ chapter.page_count }} pages</span>
                 <span v-if="chapter.date_added" class="date-added">
                   {{ formatDate(chapter.date_added) }}
                 </span>
@@ -178,7 +178,7 @@
         <!-- Load More -->
         <div v-if="hasMoreChapters" class="load-more-section" style="display: none;">
           <button @click="loadMoreChapters" class="load-more-btn">
-            Carregar Mais Capítulos
+            Load More Chapters
           </button>
         </div>
       </div>
@@ -193,20 +193,20 @@
     >
       <div class="context-menu-content">
         <button @click="selectChapter" class="menu-option">
-          Selecionar
+          Select
         </button>
         <button @click="selectAllChapters" class="menu-option">
-          Selecionar Todos
+          Select All
         </button>
         <hr class="menu-divider" />
         <button @click="markAsRead" class="menu-option">
-          {{ contextMenu.chapter?.isRead ? 'Marcar como Não Lido' : 'Marcar como Lido' }}
+          {{ contextMenu.chapter?.isRead ? 'Mark as Unread' : 'Mark as Read' }}
         </button>
         <button @click="markAsUnread" class="menu-option">
-          Marcar como Não Lido
+          Mark as Unread
         </button>
         <button @click="markPreviousAsRead" class="menu-option">
-          Marcar Anteriores como Lidos
+          Mark Previous as Read
         </button>
       </div>
     </div>
@@ -221,17 +221,17 @@
     <!-- Selection Actions Bar (appears when chapters are selected) -->
     <div v-if="selectedChapters.length > 0" class="selection-actions-bar">
       <div class="selection-info">
-        {{ selectedChapters.length }} capítulos selecionados
+        {{ selectedChapters.length }} chapters selected
       </div>
       <div class="selection-actions">
         <button @click="markSelectedAsRead" class="action-btn read-btn">
-          Marcar como Lidos
+          Mark as Read
         </button>
         <button @click="markSelectedAsUnread" class="action-btn unread-btn">
-          Marcar como Não Lidos
+          Mark as Unread
         </button>
         <button @click="clearSelection" class="action-btn cancel-btn">
-          Cancelar
+          Cancel
         </button>
       </div>
     </div>
@@ -296,31 +296,28 @@ export default {
 
     const filteredChapters = computed(() => {
       if (!manga.value?.chapters) return []
-      
+
       let chapters = [...manga.value.chapters]
-      
-      // Filtrar por busca
+
       if (searchTerm.value) {
         const term = searchTerm.value.toLowerCase()
-        chapters = chapters.filter(ch => 
+        chapters = chapters.filter(ch =>
           ch.name.toLowerCase().includes(term) ||
           ch.number?.toString().includes(term)
         )
       }
-      
-      // Ordenar
+
       chapters.sort((a, b) => {
         const aNum = a.number || 0
         const bNum = b.number || 0
         return sortOrder.value === 'desc' ? bNum - aNum : aNum - bNum
       })
-      
-      // Mostrar todos os capítulos para evitar problemas com "marcar todos"
+
       return chapters
     })
 
     const hasMoreChapters = computed(() => {
-      return false // Removido o sistema de paginação
+      return false
     })
 
     // Methods
@@ -346,8 +343,8 @@ export default {
         loadReadingProgress()
         
       } catch (err) {
-        error.value = err.message || 'Erro ao carregar mangá'
-        console.error('Erro ao carregar mangá:', err)
+        error.value = err.message || 'Error loading manga'
+        console.error('Error loading manga:', err)
       } finally {
         loading.value = false
       }
@@ -370,7 +367,6 @@ export default {
               chapter.isRead = chapterProgress.isRead
               chapter.readProgress = Number(Number(chapterProgress.progress).toFixed(2))
             } else {
-              // Garante que capítulos não salvos sejam não lidos
               chapter.isRead = false
               chapter.readProgress = 0.00
             }
@@ -381,7 +377,7 @@ export default {
 
     const continueReading = () => {
       if (!manga.value?.chapters || manga.value.chapters.length === 0) {
-        showError('Nenhum capítulo disponível')
+        showError('No chapters available')
         return
       }
 
@@ -472,8 +468,7 @@ export default {
 
     const selectAllChapters = () => {
       if (!manga.value?.chapters) return
-      
-      // Seleciona TODOS os capítulos, não apenas os filtrados
+
       selectedChapters.value = manga.value.chapters.map(ch => ch.id)
       closeAllMenus()
     }
@@ -595,8 +590,7 @@ export default {
       
       const chapterIndex = manga.value.chapters.findIndex(ch => ch.id === chapter.id)
       if (chapterIndex === -1) return
-      
-      // Marcar capítulos anteriores (índices maiores, pois lista está em ordem decrescente)
+
       for (let i = chapterIndex + 1; i < manga.value.chapters.length; i++) {
         manga.value.chapters[i].isRead = true
         manga.value.chapters[i].readProgress = 100.00
@@ -620,7 +614,6 @@ export default {
       }
       
       manga.value.chapters.forEach(chapter => {
-        // Salva TODOS os capítulos, incluindo os não lidos
         progress.chapters[chapter.id] = {
           isRead: chapter.isRead,
           progress: chapter.readProgress
@@ -633,7 +626,7 @@ export default {
     const formatDate = (dateString) => {
       try {
         const date = new Date(dateString)
-        return date.toLocaleDateString('pt-BR', {
+        return date.toLocaleDateString('en-US', {
           day: '2-digit',
           month: '2-digit',
           year: 'numeric'

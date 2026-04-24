@@ -11,28 +11,28 @@
       
       <div class="error-details" v-if="details && showDetails">
         <details>
-          <summary>Detalhes técnicos</summary>
+          <summary>Technical details</summary>
           <pre>{{ details }}</pre>
         </details>
       </div>
     </div>
-    
+
     <div class="error-actions" v-if="showActions">
-      <button 
+      <button
         v-if="retryable && onRetry"
         @click="handleRetry"
         class="retry-btn"
         :disabled="retrying"
       >
-        {{ retrying ? 'Tentando...' : 'Tentar novamente' }}
+        {{ retrying ? 'Retrying...' : 'Try again' }}
       </button>
-      
-      <button 
+
+      <button
         v-if="onDismiss"
         @click="onDismiss"
         class="dismiss-btn"
       >
-        Dispensar
+        Dismiss
       </button>
       
       <slot name="actions"></slot>
@@ -95,15 +95,15 @@ export default {
     const getDefaultTitle = () => {
       switch (props.severity) {
         case 'critical':
-          return 'Erro Crítico'
+          return 'Critical Error'
         case 'high':
-          return 'Erro Importante'
+          return 'Important Error'
         case 'medium':
-          return 'Erro'
+          return 'Error'
         case 'low':
-          return 'Aviso'
+          return 'Warning'
         default:
-          return 'Erro'
+          return 'Error'
       }
     }
     

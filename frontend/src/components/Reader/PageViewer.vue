@@ -18,17 +18,17 @@
       <div v-if="currentPageData" class="page-wrapper">
         <img
           :src="currentPageData.url"
-          :alt="`Página ${currentPage + 1}`"
+          :alt="`Page ${currentPage + 1}`"
           class="page-image"
           :style="pageImageStyle"
           @load="onImageLoad"
           @error="onImageError"
         />
-        
+
         <!-- Loading placeholder -->
         <div v-if="imageLoading" class="image-loading">
           <div class="spinner"></div>
-          <p>Carregando página...</p>
+          <p>Loading page...</p>
         </div>
       </div>
       
@@ -45,7 +45,7 @@
       >
         <img
           :src="page.url"
-          :alt="`Página ${index + 1}`"
+          :alt="`Page ${index + 1}`"
           class="page-image vertical"
           :style="verticalPageStyle"
           @load="onImageLoad"
@@ -93,20 +93,17 @@ export default {
   ],
 
   setup(props, { emit }) {
-    // Reactive data
     const viewerContainer = ref(null)
     const verticalContainer = ref(null)
     const imageLoading = ref(false)
     const pageTransition = ref(null)
-    
-    // Touch handling
+
     const touchStart = ref({ x: 0, y: 0, time: 0 })
     const touchEnd = ref({ x: 0, y: 0, time: 0 })
 
-    // Computed styles
     const pageImageStyle = computed(() => {
       const style = {}
-      
+
       switch (props.fitMode) {
         case 'width':
           style.width = '100%'
@@ -124,10 +121,9 @@ export default {
           style.objectFit = 'contain'
           break
         case 'original':
-          // Tamanho original sem zoom
           break
       }
-      
+
       return style
     })
 
@@ -140,13 +136,11 @@ export default {
 
 
 
-    // Methods
     const handleClick = (event) => {
       if (props.readingMode === 'vertical') {
-        return // Não usar cliques em modo scroll
+        return
       }
 
-      // Clique simples no centro da tela para toggle de controles
       emit('toggle-controls')
     }
 
@@ -159,7 +153,6 @@ export default {
     }
 
     const handleWheel = (event) => {
-      // Wheel handling removido (zoom não implementado)
     }
 
     const handleTouchStart = (event) => {
@@ -179,21 +172,17 @@ export default {
         time: Date.now()
       }
 
-      // Detectar swipe
       const deltaX = touchEnd.value.x - touchStart.value.x
       const deltaY = touchEnd.value.y - touchStart.value.y
       const deltaTime = touchEnd.value.time - touchStart.value.time
 
-      // Swipe mínimo: 50px em menos de 300ms
       if (deltaTime < 300 && Math.abs(deltaX) > 50) {
         if (deltaX > 0) {
-          // Swipe para direita = página anterior
           emit('previous-page')
         } else {
-          // Swipe para esquerda = próxima página
           emit('next-page')
         }
-        
+
         showPageTransition(deltaX > 0 ? 'previous' : 'next')
       }
     }
@@ -205,48 +194,43 @@ export default {
 
     const onImageError = (event) => {
       imageLoading.value = false
-      console.error('Erro ao carregar imagem:', event.target.src)
-      
-      // Substituir por placeholder
-      event.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMzMzIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyMCIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkVycm8gYW8gY2FycmVnYXI8L3RleHQ+PC9zdmc+'
+      console.error('Error loading image:', event.target.src)
+
+      event.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMzMzIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyMCIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkVycm9yIGxvYWRpbmc8L3RleHQ+PC9zdmc+'
     }
 
-    // Scroll handling for vertical mode
     const handleVerticalScroll = () => {
       if (props.readingMode !== 'vertical') return
 
       const container = verticalContainer.value
       if (!container) return
 
-      // Determinar página atual baseada no scroll
       const scrollTop = container.scrollTop
       const pageElements = container.querySelectorAll('[data-page-index]')
-      
+
       let currentPageIndex = 0
       for (let element of pageElements) {
         const rect = element.getBoundingClientRect()
         const containerRect = container.getBoundingClientRect()
-        
+
         if (rect.top <= containerRect.top + containerRect.height / 2) {
           currentPageIndex = parseInt(element.dataset.pageIndex)
         }
       }
-      
+
       if (currentPageIndex !== props.currentPage) {
         emit('page-changed', currentPageIndex)
       }
     }
 
-    // Watchers
     watch(() => props.currentPage, (newPage) => {
       imageLoading.value = true
-      
-      // Auto-navegação em modo vertical
+
       if (props.readingMode === 'vertical' && newPage >= 0) {
         nextTick(() => {
           const container = verticalContainer.value
           const pageElement = container?.querySelector(`[data-page-index="${newPage}"]`)
-          
+
           if (pageElement) {
             pageElement.scrollIntoView({ behavior: 'smooth', block: 'start' })
           }
@@ -254,9 +238,7 @@ export default {
       }
     })
 
-    // Lifecycle
     onMounted(() => {
-      // Adicionar listeners para scroll em modo vertical
       if (props.readingMode === 'vertical') {
         const container = verticalContainer.value
         container?.addEventListener('scroll', handleVerticalScroll)
@@ -264,7 +246,6 @@ export default {
     })
 
     onUnmounted(() => {
-      // Remover listeners
       if (props.readingMode === 'vertical') {
         const container = verticalContainer.value
         container?.removeEventListener('scroll', handleVerticalScroll)

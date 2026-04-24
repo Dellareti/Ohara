@@ -1,49 +1,49 @@
 <template>
   <div class="settings-view">
     <div class="settings-header">
-      <h1>Configurações do Sistema</h1>
-      <p>Personalize sua experiência de leitura e configurações gerais</p>
+      <h1>System Settings</h1>
+      <p>Customize your reading experience and general settings</p>
     </div>
 
     <div class="settings-content">
-      <!-- Configurações de Leitura -->
+      <!-- Reading Settings -->
       <div class="settings-section">
-        <h2>Configurações de Leitura</h2>
+        <h2>Reading Settings</h2>
         <div class="settings-grid">
           <div class="setting-item">
-            <label>Modo de Leitura Padrão:</label>
-            <select 
-              :value="readerStore.readingMode" 
+            <label>Default Reading Mode:</label>
+            <select
+              :value="readerStore.readingMode"
               @change="updateReaderSetting('readingMode', $event.target.value)"
               class="setting-input">
-              <option value="single">Página Única (Horizontal)</option>
+              <option value="single">Single Page (Horizontal)</option>
               <option value="vertical">Vertical (Scroll)</option>
             </select>
           </div>
 
           <div class="setting-item">
-            <label>Ajuste de Imagem Padrão:</label>
-            <select 
-              :value="readerStore.fitMode" 
+            <label>Default Image Fit:</label>
+            <select
+              :value="readerStore.fitMode"
               @change="updateReaderSetting('fitMode', $event.target.value)"
               class="setting-input">
-              <option value="width">Ajustar Largura</option>
-              <option value="height">Ajustar Altura</option>
-              <option value="screen">Ajustar Tela</option>
-              <option value="original">Tamanho Original</option>
+              <option value="width">Fit Width</option>
+              <option value="height">Fit Height</option>
+              <option value="screen">Fit Screen</option>
+              <option value="original">Original Size</option>
             </select>
           </div>
 
 
           <div class="setting-item">
-            <label>Tema Padrão:</label>
-            <select 
-              :value="readerStore.theme" 
+            <label>Default Theme:</label>
+            <select
+              :value="readerStore.theme"
               @change="updateReaderSetting('theme', $event.target.value)"
               class="setting-input">
-              <option value="dark">Escuro</option>
-              <option value="light">Claro</option>
-              <option value="sepia">Sépia</option>
+              <option value="dark">Dark</option>
+              <option value="light">Light</option>
+              <option value="sepia">Sepia</option>
             </select>
           </div>
 
@@ -51,26 +51,26 @@
         </div>
       </div>
 
-      <!-- Configurações da Interface -->
+      <!-- Interface Settings -->
       <div class="settings-section">
         <h2>Interface</h2>
         <div class="settings-grid">
           <div class="setting-item">
-            <label>Tamanho dos Cards da Biblioteca:</label>
-            <select 
-              :value="settingsStore.interface.cardSize" 
+            <label>Library Card Size:</label>
+            <select
+              :value="settingsStore.interface.cardSize"
               @change="updateInterfaceSetting('cardSize', $event.target.value)"
               class="setting-input">
-              <option value="small">Pequeno</option>
-              <option value="medium">Médio</option>
-              <option value="large">Grande</option>
+              <option value="small">Small</option>
+              <option value="medium">Medium</option>
+              <option value="large">Large</option>
             </select>
           </div>
 
           <div class="setting-item">
-            <label>Itens por Página:</label>
-            <select 
-              :value="settingsStore.interface.itemsPerPage" 
+            <label>Items per Page:</label>
+            <select
+              :value="settingsStore.interface.itemsPerPage"
               @change="updateInterfaceSetting('itemsPerPage', Number($event.target.value))"
               class="setting-input">
               <option :value="20">20 items</option>
@@ -82,14 +82,14 @@
         </div>
       </div>
 
-      <!-- Configurações de Performance -->
+      <!-- Performance Settings -->
       <div class="settings-section">
         <h2>Performance</h2>
         <div class="settings-grid">
           <div class="setting-item">
-            <label>Cache de Imagens (MB):</label>
-            <select 
-              :value="settingsStore.performance.cacheSize" 
+            <label>Image Cache (MB):</label>
+            <select
+              :value="settingsStore.performance.cacheSize"
               @change="updatePerformanceSetting('cacheSize', Number($event.target.value))"
               class="setting-input">
               <option :value="50">50 MB</option>
@@ -100,114 +100,114 @@
           </div>
 
           <div class="setting-item">
-            <label>Pré-carregamento de Páginas:</label>
-            <select 
-              :value="settingsStore.performance.preloadPages" 
+            <label>Page Preloading:</label>
+            <select
+              :value="settingsStore.performance.preloadPages"
               @change="updatePerformanceSetting('preloadPages', Number($event.target.value))"
               class="setting-input">
-              <option :value="1">1 página</option>
-              <option :value="3">3 páginas</option>
-              <option :value="5">5 páginas</option>
-              <option :value="10">10 páginas</option>
+              <option :value="1">1 page</option>
+              <option :value="3">3 pages</option>
+              <option :value="5">5 pages</option>
+              <option :value="10">10 pages</option>
             </select>
           </div>
 
           <div class="setting-item">
-            <label>Max Cache do Reader:</label>
-            <select 
-              :value="settingsStore.performance.maxCacheSize" 
+            <label>Reader Max Cache:</label>
+            <select
+              :value="settingsStore.performance.maxCacheSize"
               @change="updatePerformanceSetting('maxCacheSize', Number($event.target.value))"
               class="setting-input">
-              <option :value="25">25 páginas</option>
-              <option :value="50">50 páginas</option>
-              <option :value="100">100 páginas</option>
-              <option :value="200">200 páginas</option>
+              <option :value="25">25 pages</option>
+              <option :value="50">50 pages</option>
+              <option :value="100">100 pages</option>
+              <option :value="200">200 pages</option>
             </select>
           </div>
 
           <div class="setting-item checkbox-item">
             <label>
-              <input 
-                type="checkbox" 
+              <input
+                type="checkbox"
                 :checked="settingsStore.performance.enableCache"
                 @change="updatePerformanceSetting('enableCache', $event.target.checked)" />
-              Habilitar Cache de Biblioteca
+              Enable Library Cache
             </label>
           </div>
 
           <div class="setting-item checkbox-item">
             <label>
-              <input 
-                type="checkbox" 
+              <input
+                type="checkbox"
                 :checked="settingsStore.performance.compressImages"
                 @change="updatePerformanceSetting('compressImages', $event.target.checked)" />
-              Comprimir Imagens Automaticamente
+              Compress Images Automatically
             </label>
           </div>
 
           <div class="setting-item">
             <button @click="clearCache" class="action-btn secondary">
-              Limpar Cache ({{ cacheUsed }} MB em uso)
+              Clear Cache ({{ cacheUsed }} MB in use)
             </button>
           </div>
         </div>
       </div>
 
-      <!-- Configurações de Backup -->
+      <!-- Backup Settings -->
       <div class="settings-section">
-        <h2>Backup e Dados</h2>
+        <h2>Backup and Data</h2>
         <div class="settings-grid">
           <div class="setting-item checkbox-item">
             <label>
-              <input 
-                type="checkbox" 
+              <input
+                type="checkbox"
                 :checked="settingsStore.system.autoSaveProgress"
                 @change="updateSystemSetting('autoSaveProgress', $event.target.checked)" />
-              Salvar Progresso Automaticamente
+              Auto-Save Progress
             </label>
           </div>
 
           <div class="setting-item">
-            <label>Status do Backup:</label>
+            <label>Backup Status:</label>
             <div class="backup-status">
-              <span class="status-indicator">Use exportar/importar para backup manual</span>
+              <span class="status-indicator">Use export/import for manual backup</span>
             </div>
           </div>
         </div>
       </div>
 
-            <!-- Informações do Sistema -->
+            <!-- System Information -->
       <div class="settings-section">
-        <h2>Informações do Sistema</h2>
+        <h2>System Information</h2>
         <div class="system-info">
           <div class="info-item">
-            <span class="info-label">Versão do Ohara:</span>
+            <span class="info-label">Ohara Version:</span>
             <span class="info-value">v{{ settingsStore.system.version }}</span>
           </div>
           <div class="info-item">
-            <span class="info-label">Páginas Pré-carregadas:</span>
-            <span class="info-value">{{ readerStore.preloadedPages.size }} páginas</span>
+            <span class="info-label">Preloaded Pages:</span>
+            <span class="info-value">{{ readerStore.preloadedPages.size }} pages</span>
           </div>
           <div class="info-item">
-            <span class="info-label">Cache em Uso:</span>
+            <span class="info-label">Cache in Use:</span>
             <span class="info-value">{{ cacheUsed }} MB / {{ settingsStore.performance.cacheSize }} MB</span>
           </div>
         </div>
       </div>
-      
-      <!-- Ações -->
+
+      <!-- Actions -->
       <div class="settings-actions">
         <button @click="exportSettings" class="action-btn secondary">
-          Exportar Configurações
+          Export Settings
         </button>
         <button @click="importSettings" class="action-btn secondary">
-          Importar Configurações
+          Import Settings
         </button>
         <button @click="resetToDefaults" class="action-btn danger">
-          Restaurar Padrões
+          Restore Defaults
         </button>
         <button @click="saveSettings" class="action-btn primary">
-          Salvar Configurações
+          Save Settings
         </button>
       </div>
     </div>
@@ -232,10 +232,8 @@ export default {
     const backendOnline = ref(false)
     const libraryPath = ref('')
 
-    // Computed properties
     const cacheUsed = computed(() => settingsStore.cacheUsed)
 
-    // Methods to update settings
     const updateReaderSetting = (key, value) => {
       if (key === 'readingMode') {
         readerStore.setReadingMode(value)
@@ -243,11 +241,11 @@ export default {
         readerStore.updateReadingSettings({ [key]: value })
       }
     }
-    
+
     const updateInterfaceSetting = (key, value) => {
       settingsStore.updateInterfaceSettings({ [key]: value })
     }
-    
+
     const updatePerformanceSetting = (key, value) => {
       settingsStore.updatePerformanceSettings({ [key]: value })
     }
@@ -256,71 +254,64 @@ export default {
       settingsStore.system[key] = value
       settingsStore.saveSettings()
     }
-    
+
     const clearCache = () => {
       settingsStore.clearCache()
-      showSuccess('Cache limpo com sucesso!')
+      showSuccess('Cache cleared successfully!')
     }
 
     const loadSettings = () => {
       try {
-        // Load reader settings
         readerStore.loadSettings()
-        
-        // Load other settings
         settingsStore.loadSettings()
-        
       } catch (error) {
-        console.error('Erro ao carregar configurações:', error)
+        console.error('Error loading settings:', error)
       }
     }
 
     const saveSettings = () => {
       try {
-        // Save reader settings
         readerStore.saveSettings()
-        
-        // Save other settings
+
         const success = settingsStore.saveSettings()
-        
+
         if (success) {
-          showSuccess('Configurações salvas com sucesso!')
+          showSuccess('Settings saved successfully!')
         } else {
-          showError('Erro ao salvar configurações')
+          showError('Error saving settings')
         }
-        
+
       } catch (error) {
-        console.error('Erro ao salvar configurações:', error)
-        showError('Erro ao salvar configurações')
+        console.error('Error saving settings:', error)
+        showError('Error saving settings')
       }
     }
 
     const resetToDefaults = () => {
-      if (confirm('Tem certeza que deseja restaurar todas as configurações para os valores padrão?')) {
-        // Reset all settings through stores
+      if (confirm('Are you sure you want to restore all settings to default values?')) {
         settingsStore.resetToDefaults()
-        
-        showSuccess('Configurações restauradas para os padrões!')
+
+        showSuccess('Settings restored to defaults!')
       }
     }
 
     const exportSettings = () => {
       try {
         const settings = settingsStore.allSettings
-        
+
         const dataStr = JSON.stringify(settings, null, 2)
         const dataBlob = new Blob([dataStr], { type: 'application/json' })
-        
+
         const link = document.createElement('a')
         link.href = URL.createObjectURL(dataBlob)
         link.download = `ohara_settings_${new Date().toISOString().split('T')[0]}.json`
         link.click()
-        
-        showSuccess('Configurações exportadas com sucesso!')
-        
+
+        showSuccess('Settings exported successfully!')
+
       } catch (error) {
-        console.error('Erro ao exportar configurações:', error)
-        showError('Erro ao exportar configurações')
+        console.error('Error exporting settings:', error)
+        showError('Error exporting settings')
       }
     }
 
@@ -328,30 +319,30 @@ export default {
       const input = document.createElement('input')
       input.type = 'file'
       input.accept = '.json'
-      
+
       input.onchange = (event) => {
         const file = event.target.files[0]
         if (!file) return
-        
+
         const reader = new FileReader()
         reader.onload = (e) => {
           try {
             const settingsData = e.target.result
             const success = settingsStore.importSettings(settingsData)
-            
+
             if (success) {
-              showSuccess('Configurações importadas com sucesso!')
+              showSuccess('Settings imported successfully!')
             } else {
-              showError('Erro ao importar configurações: arquivo inválido')
+              showError('Error importing settings: invalid file')
             }
           } catch (error) {
-            console.error('Erro ao importar configurações:', error)
-            showError('Erro ao importar configurações: arquivo inválido')
+            console.error('Error importing settings:', error)
+            showError('Error importing settings: invalid file')
           }
         }
         reader.readAsText(file)
       }
-      
+
       input.click()
     }
 
@@ -363,7 +354,7 @@ export default {
         backendOnline.value = false
       }
 
-      libraryPath.value = libraryStore.libraryPath || 'Não configurada'
+      libraryPath.value = libraryStore.libraryPath || 'Not configured'
     }
 
     onMounted(() => {

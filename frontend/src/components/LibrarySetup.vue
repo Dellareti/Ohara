@@ -2,30 +2,30 @@
   <div class="setup-container">
     <!-- Header -->
     <div class="setup-header">
-      <h1>Configurar Biblioteca Ohara</h1>
-      <p>Configure sua biblioteca de mangás para começar a leitura</p>
+      <h1>Configure Ohara Library</h1>
+      <p>Configure your manga library to start reading</p>
     </div>
 
-    <!-- Configuração Principal -->
+    <!-- Main Setup -->
     <div class="setup-main">
       <div class="setup-card">
         <div class="card-header">
-          <h2>Pasta da Biblioteca</h2>
-          <p>Escolha a pasta onde estão organizados seus mangás</p>
+          <h2>Library Folder</h2>
+          <p>Choose the folder where your manga is organized</p>
         </div>
 
         <div class="input-section">
-          <label for="libraryPath">Caminho da Biblioteca:</label>
+          <label for="libraryPath">Library Path:</label>
           <input
             id="libraryPath"
             v-model="libraryPath"
             type="text"
-            placeholder="/home/user/Biblioteca ou C:\Mangas"
+            placeholder="/home/user/Library or C:\Manga"
             class="path-input"
             @input="validatePathDebounced"
           />
-          
-          <!-- Status de Validação -->
+
+          <!-- Validation Status -->
           <div v-if="validation.checked" class="validation-status">
             <div v-if="validation.valid" class="status valid">
               {{ validation.message }}
@@ -36,62 +36,62 @@
           </div>
         </div>
 
-        <!-- Biblioteca Anterior (se existir) -->
+        <!-- Previous Library (if it exists) -->
         <div v-if="previousLibrary" class="previous-section">
-          <h3>Biblioteca Anterior</h3>
+          <h3>Previous Library</h3>
           <div class="previous-path">
             <span class="path-text">{{ previousLibrary }}</span>
-            <button 
-              @click="usePreviousLibrary" 
+            <button
+              @click="usePreviousLibrary"
               class="use-previous-btn"
             >
-              Usar Esta Pasta
+              Use This Folder
             </button>
           </div>
         </div>
 
-        <!-- Ações -->
+        <!-- Actions -->
         <div class="actions">
-          <button 
+          <button
             @click="configureLibrary"
             :disabled="!validation.valid || isConfiguring"
             class="configure-btn"
           >
-            <span v-if="isConfiguring">Configurando...</span>
-            <span v-else>Configurar Biblioteca</span>
+            <span v-if="isConfiguring">Configuring...</span>
+            <span v-else>Configure Library</span>
           </button>
 
           <router-link to="/library" class="back-btn">
-            Voltar para Biblioteca
+            Back to Library
           </router-link>
         </div>
       </div>
 
-      <!-- Estrutura Recomendada -->
+      <!-- Recommended Structure -->
       <div class="help-card">
-        <h3>Estrutura Recomendada</h3>
+        <h3>Recommended Structure</h3>
         <div class="structure-example">
           <div class="structure-good">
-            <h4>✅ Organizada</h4>
-            <pre>📁 Biblioteca/
+            <h4>✅ Organized</h4>
+            <pre>📁 Library/
 ├── 📁 One Piece/
-│   ├── 📁 Capítulo 01/
+│   ├── 📁 Chapter 01/
 │   │   ├── 01.jpg
 │   │   └── 02.jpg
-│   └── 📁 Capítulo 02/
+│   └── 📁 Chapter 02/
 ├── 📁 Naruto/
 └── 📁 Solo Leveling/</pre>
           </div>
-          
+
           <div class="structure-bad">
-            <h4>❌ Problemática</h4>
-            <pre>📁 Manga_Pasta/
+            <h4>❌ Problematic</h4>
+            <pre>📁 Manga_Folder/
 ├── one_piece_ch1.zip
 ├── naruto.pdf
-├── 📁 Misturado/
+├── 📁 Mixed/
 │   ├── onepiece_001.jpg
 │   └── naruto_001.jpg
-└── imagem_solta.jpg</pre>
+└── loose_image.jpg</pre>
           </div>
         </div>
       </div>
@@ -113,106 +113,97 @@ export default {
     const libraryStore = useLibraryStore()
     const { showError } = useToast()
     
-    // Estado reativo
     const libraryPath = ref('')
     const validation = ref({ checked: false, valid: false, message: '' })
     const previousLibrary = ref('')
     const isConfiguring = ref(false)
-    
-    // Debounce para validação
+
     let validationTimeout = null
-    
+
     const validatePathDebounced = () => {
       clearTimeout(validationTimeout)
       validationTimeout = setTimeout(validatePath, 500)
     }
-    
+
     const validatePath = async () => {
       if (!libraryPath.value.trim()) {
         validation.value = { checked: false, valid: false, message: '' }
         return
       }
-      
+
       try {
         const response = await fetch(`${API_BASE_URL}/api/validate-path?path=${encodeURIComponent(libraryPath.value)}`)
         const data = await response.json()
-        
+
         validation.value = {
           checked: true,
           valid: data.is_valid,
-          message: data.message || (data.is_valid ? 'Caminho válido!' : 'Caminho inválido')
+          message: data.message || (data.is_valid ? 'Valid path!' : 'Invalid path')
         }
-        
-        
+
+
       } catch (error) {
-        console.error('Erro na validação:', error)
+        console.error('Validation error:', error)
         validation.value = {
           checked: true,
           valid: false,
-          message: 'Erro ao validar caminho'
+          message: 'Error validating path'
         }
       }
     }
-    
+
     const configureLibrary = async () => {
       if (!validation.value.valid) return
-      
+
       isConfiguring.value = true
-      
+
       try {
-        // 1. Primeiro, configurar o caminho
         await libraryStore.setLibraryPath(libraryPath.value)
-        
-        // 2. Depois, escanear usando POST com FormData
-        
+
         const formData = new FormData()
         formData.append('library_path', libraryPath.value)
-        
+
         const response = await fetch(`${API_BASE_URL}/api/scan-library`, {
           method: 'POST',
           body: formData
         })
-        
+
         if (!response.ok) {
-          throw new Error(`Erro HTTP ${response.status}: ${response.statusText}`)
+          throw new Error(`HTTP Error ${response.status}: ${response.statusText}`)
         }
-        
+
         const data = await response.json()
-        
+
         if (data.library) {
-          // Atualizar store com dados escaneados
           libraryStore.mangas = data.library.mangas || []
           libraryStore.totalMangas = data.library.total_mangas || 0
           libraryStore.totalChapters = data.library.total_chapters || 0
           libraryStore.totalPages = data.library.total_pages || 0
           libraryStore.isInitialized = true
-                    
-          // Redirecionar para biblioteca
+
           router.push('/library')
         } else {
-          throw new Error(data.message || 'Erro no scan da biblioteca')
+          throw new Error(data.message || 'Error scanning library')
         }
-        
+
       } catch (error) {
-        console.error('Erro ao configurar biblioteca:', error)
-        showError('Erro ao configurar biblioteca: ' + error.message)
+        console.error('Error configuring library:', error)
+        showError('Error configuring library: ' + error.message)
       } finally {
         isConfiguring.value = false
       }
     }
-    
+
     const usePreviousLibrary = () => {
       libraryPath.value = previousLibrary.value
       validatePath()
     }
-    
-    // Carregar biblioteca anterior ao montar
+
     onMounted(() => {
       if (libraryStore.libraryPath) {
         previousLibrary.value = libraryStore.libraryPath
       }
-      
-      // Se já tem uma biblioteca configurada, sugerir o caminho
+
       if (libraryStore.libraryPath && !libraryPath.value) {
         libraryPath.value = libraryStore.libraryPath
         validatePath()

@@ -2,72 +2,72 @@ export function formatError(error) {
   if (error.response) {
     const status = error.response.status
     const data = error.response.data
-    
+
     if (data?.detail) {
       return data.detail
     }
-    
+
     switch (status) {
       case 400:
-        return 'Dados inválidos fornecidos'
+        return 'Invalid data provided'
       case 401:
-        return 'Não autorizado - verifique suas credenciais'
+        return 'Unauthorized - check your credentials'
       case 403:
-        return 'Acesso negado - permissões insuficientes'
+        return 'Access denied - insufficient permissions'
       case 404:
-        return 'Recurso não encontrado'
+        return 'Resource not found'
       case 422:
-        return 'Dados de entrada inválidos'
+        return 'Invalid input data'
       case 500:
-        return 'Erro interno do servidor'
+        return 'Internal server error'
       case 502:
-        return 'Servidor indisponível temporariamente'
+        return 'Server temporarily unavailable'
       case 503:
-        return 'Serviço temporariamente indisponível'
+        return 'Service temporarily unavailable'
       default:
-        return `Erro do servidor (${status})`
+        return `Server error (${status})`
     }
   } else if (error.request) {
-    return 'Erro de conexão - verifique sua internet'
+    return 'Connection error - check your internet'
   } else if (error.code) {
     switch (error.code) {
       case 'ENOENT':
-        return 'Arquivo ou diretório não encontrado'
+        return 'File or directory not found'
       case 'EACCES':
-        return 'Permissão negada para acessar o arquivo'
+        return 'Permission denied to access the file'
       case 'ENOTDIR':
-        return 'Caminho especificado não é um diretório'
+        return 'Specified path is not a directory'
       case 'TIMEOUT':
-        return 'Operação expirou - tente novamente'
+        return 'Operation timed out - try again'
       default:
-        return error.message || 'Erro desconhecido'
+        return error.message || 'Unknown error'
     }
   }
-  
-  return error.message || 'Erro desconhecido'
+
+  return error.message || 'Unknown error'
 }
 
 export function formatFileError(error) {
   if (error.code) {
     switch (error.code) {
       case 'ENOENT':
-        return 'Arquivo ou pasta não encontrada'
+        return 'File or folder not found'
       case 'EACCES':
-        return 'Sem permissão para acessar este local'
+        return 'No permission to access this location'
       case 'ENOTDIR':
-        return 'O caminho não é uma pasta válida'
+        return 'The path is not a valid folder'
       case 'EISDIR':
-        return 'O caminho é uma pasta, não um arquivo'
+        return 'The path is a folder, not a file'
       case 'EMFILE':
       case 'ENFILE':
-        return 'Muitos arquivos abertos - tente novamente'
+        return 'Too many open files - try again'
       case 'ENOSPC':
-        return 'Espaço em disco insuficiente'
+        return 'Insufficient disk space'
       default:
-        return `Erro de arquivo: ${error.message}`
+        return `File error: ${error.message}`
     }
   }
-  
+
   return formatError(error)
 }
 
@@ -75,17 +75,17 @@ export function isRetryableError(error) {
   if (error.request && !error.response) {
     return true
   }
-  
+
   if (error.response) {
     const status = error.response.status
     return status >= 500 || status === 408 || status === 429
   }
-  
+
   if (error.code) {
     const retryableCodes = ['EMFILE', 'ENFILE', 'EAGAIN', 'EBUSY']
     return retryableCodes.includes(error.code)
   }
-  
+
   return false
 }
 
@@ -96,18 +96,18 @@ export function getErrorSeverity(error) {
     if (status === 404 || status === 403) return 'high'
     if (status >= 400) return 'medium'
   }
-  
+
   if (error.request && !error.response) {
     return 'high'
   }
-  
+
   if (error.code) {
     const criticalCodes = ['ENOSPC', 'EACCES']
     if (criticalCodes.includes(error.code)) return 'critical'
-    
+
     const highCodes = ['ENOENT', 'ENOTDIR']
     if (highCodes.includes(error.code)) return 'high'
   }
-  
+
   return 'medium'
 }

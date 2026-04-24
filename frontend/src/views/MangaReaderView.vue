@@ -7,14 +7,14 @@
     <!-- Loading State -->
     <div v-if="loading || readerStore.loading" class="reader-loading">
       <div class="spinner"></div>
-      <p>Carregando capítulo...</p>
+      <p>Loading chapter...</p>
     </div>
 
     <!-- Error State -->
     <div v-if="error || readerStore.error" class="reader-error">
-      <h2>Erro ao Carregar Capítulo</h2>
+      <h2>Error Loading Chapter</h2>
       <p>{{ error || readerStore.error }}</p>
-      <button @click="loadChapter" class="retry-btn">Tentar Novamente</button>
+      <button @click="loadChapter" class="retry-btn">Try Again</button>
     </div>
 
     <!-- Reader Content -->
@@ -22,10 +22,10 @@
       <!-- Header Controls -->
       <div class="reader-header" :class="{ 'hidden': readerStore.hideControls }">
         <div class="header-left">
-          <button @click="goBack" class="control-btn back-btn">Voltar</button>
+          <button @click="goBack" class="control-btn back-btn">Back</button>
           <div class="chapter-info">
-            <h3>{{ readerStore.currentManga?.title || 'Carregando...' }}</h3>
-            <p>{{ readerStore.currentChapter?.chapter?.name || 'Carregando...' }}</p>
+            <h3>{{ readerStore.currentManga?.title || 'Loading...' }}</h3>
+            <p>{{ readerStore.currentChapter?.chapter?.name || 'Loading...' }}</p>
           </div>
         </div>
         <div class="header-right">
@@ -41,11 +41,11 @@
 
       <!-- Page Viewer -->
       <div class="page-viewer" :class="`mode-${readerStore.readingMode}`" @click="toggleControls">
-        <!-- Modo Página Única -->
+        <!-- Single Page Mode -->
         <div v-if="readerStore.readingMode === 'single'" class="single-page-container">
-          <img 
+          <img
             :src="getPageImageUrl(readerStore.currentPage)"
-            :alt="`Página ${readerStore.currentPage + 1}`"
+            :alt="`Page ${readerStore.currentPage + 1}`"
             class="manga-page"
             :class="`fit-${readerStore.fitMode}`"
             @error="handleImageError"
@@ -54,17 +54,17 @@
         </div>
 
 
-        <!-- Modo Vertical -->
+        <!-- Vertical Mode -->
         <div v-else-if="readerStore.readingMode === 'vertical'" class="vertical-container">
           <div class="vertical-pages">
-            <div 
-              v-for="pageIndex in readerStore.totalPages" 
+            <div
+              v-for="pageIndex in readerStore.totalPages"
               :key="pageIndex"
               class="vertical-page-wrapper"
             >
-              <img 
+              <img
                 :src="getPageImageUrl(pageIndex - 1)"
-                :alt="`Página ${pageIndex}`"
+                :alt="`Page ${pageIndex}`"
                 class="manga-page vertical-page"
                 :class="`fit-${readerStore.fitMode}`"
                 @error="handleImageError"
@@ -86,29 +86,29 @@
         </div>
 
         <div class="footer-controls">
-          <button 
-            @click="previousChapter" 
-            :disabled="!hasPreviousChapter" 
+          <button
+            @click="previousChapter"
+            :disabled="!hasPreviousChapter"
             class="control-btn"
           >
-            ⏮️ Cap. Anterior
+            ⏮️ Prev. Chapter
           </button>
           <button @click="previousPage" :disabled="!canGoPrevious" class="control-btn">
-            ⏪ Anterior
+            ⏪ Previous
           </button>
           <select :value="readerStore.readingMode" @change="changeReadingMode($event.target.value)" class="mode-select">
             <option value="single">Horizontal</option>
             <option value="vertical">Vertical</option>
           </select>
           <button @click="nextPage" :disabled="!canGoNext" class="control-btn">
-            Próxima ⏩
+            Next ⏩
           </button>
-          <button 
-            @click="nextChapter" 
-            :disabled="!hasNextChapter" 
+          <button
+            @click="nextChapter"
+            :disabled="!hasNextChapter"
             class="control-btn"
           >
-            Próx. Cap. ⏭️
+            Next Chapter ⏭️
           </button>
         </div>
       </div>
@@ -117,33 +117,33 @@
       <div v-if="readerStore.showSettings" class="settings-panel" @click.stop>
         <div class="settings-content">
           <div class="settings-header">
-            <h3>Configurações de Leitura</h3>
+            <h3>Reading Settings</h3>
             <button @click="closeSettings" class="close-btn">✕</button>
           </div>
-          
+
           <div class="setting-group">
-            <label class="setting-label">Ajuste de Imagem:</label>
+            <label class="setting-label">Image Fit:</label>
             <select v-model="readerStore.fitMode" class="setting-select">
-              <option value="width">Ajustar Largura</option>
-              <option value="height">Ajustar Altura</option>
-              <option value="screen">Ajustar Tela</option>
-              <option value="original">Tamanho Original</option>
+              <option value="width">Fit Width</option>
+              <option value="height">Fit Height</option>
+              <option value="screen">Fit Screen</option>
+              <option value="original">Original Size</option>
             </select>
           </div>
 
 
           <div class="setting-group">
-            <label class="setting-label">Tema:</label>
+            <label class="setting-label">Theme:</label>
             <select v-model="readerStore.theme" class="setting-select">
-              <option value="dark">Escuro</option>
-              <option value="light">Claro</option>
-              <option value="sepia">Sépia</option>
+              <option value="dark">Dark</option>
+              <option value="light">Light</option>
+              <option value="sepia">Sepia</option>
             </select>
           </div>
 
           <div class="setting-actions">
-            <button @click="resetSettings" class="secondary-btn">Redefinir</button>
-            <button @click="applySettings" class="primary-btn">Aplicar</button>
+            <button @click="resetSettings" class="secondary-btn">Reset</button>
+            <button @click="applySettings" class="primary-btn">Apply</button>
           </div>
         </div>
       </div>
@@ -199,20 +199,17 @@ export default {
 
     // Methods
     const getPageImageUrl = (pageIndex) => {
-      // Verificar se temos dados do capítulo
       if (!readerStore.currentChapter?.chapter?.pages) {
-        return `https://via.placeholder.com/800x1200/333/fff?text=Sem+Dados+Disponíveis`
+        return `https://via.placeholder.com/800x1200/333/fff?text=No+Data+Available`
       }
 
-      // Verificar se a página existe
       const page = readerStore.currentChapter.chapter.pages[pageIndex]
       if (!page) {
-        return `https://via.placeholder.com/800x1200/ff6b6b/fff?text=Página+${pageIndex + 1}+Não+Encontrada`
+        return `https://via.placeholder.com/800x1200/ff6b6b/fff?text=Page+${pageIndex + 1}+Not+Found`
       }
 
-      // Construir URL da API
       let imageUrl = ''
-      
+
       if (page.url) {
         imageUrl = page.url
       } else if (page.path) {
@@ -225,27 +222,26 @@ export default {
     }
 
     const handleImageError = (event) => {
-      event.target.src = `https://via.placeholder.com/800x1200/ff6b6b/fff?text=Erro+ao+Carregar+Página`
+      event.target.src = `https://via.placeholder.com/800x1200/ff6b6b/fff?text=Error+Loading+Page`
     }
 
     const handleImageLoad = (event) => {
-      // Imagem carregada com sucesso
     }
 
     const loadChapter = async () => {
       if (!mangaId.value || !chapterId.value) {
-        error.value = 'Parâmetros de rota inválidos'
+        error.value = 'Invalid route parameters'
         return
       }
 
       loading.value = true
       error.value = null
-      
+
       try {
         await readerStore.loadChapter(mangaId.value, chapterId.value)
         resetControlsTimer()
       } catch (err) {
-        error.value = `Erro ao carregar capítulo: ${err.message}`
+        error.value = `Error loading chapter: ${err.message}`
       } finally {
         loading.value = false
       }
@@ -295,23 +291,23 @@ export default {
           }
         })
       } else {
-        showTemporaryMessage('📖 Este é o último capítulo disponível')
+        showTemporaryMessage('📖 This is the last available chapter')
       }
     }
 
     const previousChapter = () => {
       if (readerStore.navigation?.previousChapter) {
         const prevChapterId = readerStore.navigation.previousChapter.id
-        
+
         router.push({
           name: 'MangaReader',
-          params: { 
-            mangaId: mangaId.value, 
-            chapterId: prevChapterId 
+          params: {
+            mangaId: mangaId.value,
+            chapterId: prevChapterId
           }
         })
       } else {
-        showTemporaryMessage('📖 Este é o primeiro capítulo')
+        showTemporaryMessage('📖 This is the first chapter')
       }
     }
 
@@ -377,7 +373,7 @@ export default {
         }
         readerStore.toggleFullscreen()
       } catch (err) {
-        console.error('Erro ao alternar fullscreen:', err)
+        console.error('Error toggling fullscreen:', err)
       }
     }
 
@@ -457,12 +453,10 @@ export default {
     // Lifecycle
     onMounted(() => {
       readerStore.loadSettings()
-      
-      // Verifica se há página inicial na query
+
       const targetPage = route.query.page ? parseInt(route.query.page) - 1 : 0
-      
+
       loadChapter().then(() => {
-        // Navega para página específica se fornecida
         if (targetPage > 0 && targetPage < readerStore.totalPages) {
           readerStore.setCurrentPage(targetPage)
         }

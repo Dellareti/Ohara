@@ -6,93 +6,78 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000
 
 export const useReaderStore = defineStore('reader', {
   state: () => ({
-    // Dados do capítulo atual
     currentManga: null,
     currentChapter: null,
     currentPage: 0,
     totalPages: 0,
-    
-    // Estados de carregamento
+
     loading: false,
     error: null,
-    
-    // Configurações de leitura
-    readingMode: 'vertical', // single, vertical
-    fitMode: 'original', // width, height, screen, original
-    theme: 'dark', // dark, light, sepia
-    
-    // Interface
+
+    readingMode: 'vertical',
+    fitMode: 'original',
+    theme: 'dark',
+
     isFullscreen: false,
     hideControls: false,
     showSettings: false,
-    
+
     navigation: {
       previousChapter: null,
       nextChapter: null,
       chapterIndex: { current: 0, total: 0 },
-      allChapters: [] 
+      allChapters: []
     },
-    
-    // Progresso
+
     readingProgress: {},
     readingStartTime: null,
-    
-    // Cache e Performance
+
     preloadedPages: new Set(),
     pageCache: new Map(),
     maxCacheSize: 50,
-    
-    // Internal
+
     _saveProgressTimeout: null
   }),
 
   getters: {
-    // Página atual
     currentPageData: (state) => {
       if (!state.currentChapter?.chapter?.pages || state.currentPage < 0) return null
       return state.currentChapter.chapter.pages[state.currentPage]
     },
-    
-    // Próxima página (para modo duplo)
+
     nextPageData: (state) => {
       if (!state.currentChapter?.chapter?.pages || state.currentPage >= state.totalPages - 1) return null
       return state.currentChapter.chapter.pages[state.currentPage + 1]
     },
-    
-    // Páginas visíveis (para modo vertical/webtoon)
+
     visiblePages: (state) => {
       if (!state.currentChapter?.chapter?.pages) return []
-      
+
       if (state.readingMode === 'vertical' || state.readingMode === 'webtoon') {
         return state.currentChapter.chapter.pages
       }
-      
+
       const pages = [state.currentChapter.chapter.pages[state.currentPage]]
       if (state.readingMode === 'double' && state.currentPage < state.totalPages - 1) {
         pages.push(state.currentChapter.chapter.pages[state.currentPage + 1])
       }
-      
+
       return pages.filter(Boolean)
     },
-    
-    // Progresso percentual
+
     progressPercentage: (state) => {
       if (state.totalPages === 0) return 0
       return Number(((state.currentPage / Math.max(state.totalPages - 1, 1)) * 100).toFixed(2))
     },
-    
-    // Verificar navegação baseada na lista completa
+
     hasPreviousChapter: (state) => {
-      // Verificando capítulo anterior
       return state.navigation.previousChapter !== null
     },
-    
+
     hasNextChapter: (state) => {
-      // Verificando próximo capítulo
       return state.navigation.nextChapter !== null
     },
-    
-    // Tempo de leitura atual
+
     currentReadingTime: (state) => {
       if (!state.readingStartTime) return 0
       return Math.floor((Date.now() - state.readingStartTime) / 1000)
@@ -100,86 +85,67 @@ export const useReaderStore = defineStore('reader', {
   },
 
   actions: {
-    // Carregar capítulo
     async loadChapter(mangaId, chapterId) {
       this.loading = true
       this.error = null
-      
+
       try {
-        // Carregando capítulo
-        
-        // 1. Carregar dados do capítulo
         const response = await axios.get(`${API_BASE_URL}/api/manga/${mangaId}/chapter/${chapterId}`)
         const data = response.data
-        
-        // Dados recebidos do backend
-        
-        // 2. Atualizar estado básico
+
         this.currentManga = data.manga
         this.currentChapter = data
         this.totalPages = data.chapter.pages.length
-        
-        // 3. Usar navegação do backend
+
         if (data.navigation) {
           this.navigation = {
             previousChapter: data.navigation.previous_chapter,
             nextChapter: data.navigation.next_chapter,
             chapterIndex: data.navigation.chapter_index,
-            allChapters: [] // Será carregado separadamente se necessário
+            allChapters: []
           }
         }
-        
-        // 4. Carregar lista completa de capítulos para funcionalidades extras
+
         this.loadChapterList(mangaId)
-        
-        // 5. Carregar progresso salvo
+
         await this.loadChapterProgress(mangaId, chapterId)
-        
-        // 6. Iniciar timer de leitura
+
         this.readingStartTime = Date.now()
-        
-        // 7. Pré-carregar páginas
+
         this.preloadPages()
-        
-        
+
+
         return data
-        
+
       } catch (error) {
         this.error = formatError(error)
-        console.error('Erro ao carregar capítulo:', error)
+        console.error('Error loading chapter:', error)
         throw error
       } finally {
         this.loading = false
       }
     },
 
-    // Método para carregar lista de capítulos
     async loadChapterList(mangaId) {
       try {
         const chaptersResponse = await axios.get(`${API_BASE_URL}/api/manga/${mangaId}/chapters`)
         const chaptersData = chaptersResponse.data
-        
+
         if (chaptersData.chapters && Array.isArray(chaptersData.chapters)) {
           this.navigation.allChapters = chaptersData.chapters
         }
       } catch (error) {
-        console.warn('Erro ao carregar lista de capítulos:', error)
+        console.warn('Error loading chapter list:', error)
       }
     },
 
-    // Método para carregar navegação entre capítulos (DEPRECADO - usar navegação do backend)
     async loadChapterNavigation(mangaId, currentChapterId) {
       try {
-        // Carregando navegação
-        
-        // Buscar lista de todos os capítulos do mangá
         const chaptersResponse = await axios.get(`${API_BASE_URL}/api/manga/${mangaId}/chapters`)
         const chaptersData = chaptersResponse.data
-        
-        // Lista de capítulos recebida
-        
+
         if (!chaptersData.chapters || !Array.isArray(chaptersData.chapters)) {
-          console.warn('Lista de capítulos inválida')
+          console.warn('Invalid chapter list')
           this.navigation = {
             previousChapter: null,
             nextChapter: null,
@@ -188,27 +154,20 @@ export const useReaderStore = defineStore('reader', {
           }
           return
         }
-        
+
         const allChapters = chaptersData.chapters
         this.navigation.allChapters = allChapters
-        
-        // Encontrar índice do capítulo atual
-        const currentIndex = allChapters.findIndex(ch => 
-          ch.id === currentChapterId || 
+
+        const currentIndex = allChapters.findIndex(ch =>
+          ch.id === currentChapterId ||
           ch.id.includes(currentChapterId) ||
           currentChapterId.includes(ch.id)
         )
-        
-        // Capítulo atual encontrado no índice
-        // Procurando por ID
-        // IDs disponíveis
-        
+
         if (currentIndex === -1) {
-          console.warn('Capítulo atual não encontrado na lista')
-          // Tentar busca mais flexível
+          console.warn('Current chapter not found in list')
           const flexibleIndex = this.findChapterFlexible(allChapters, currentChapterId)
           if (flexibleIndex !== -1) {
-            // Capítulo encontrado com busca flexível
             this.setupNavigation(allChapters, flexibleIndex)
           } else {
             this.navigation = {
@@ -220,11 +179,11 @@ export const useReaderStore = defineStore('reader', {
           }
           return
         }
-        
+
         this.setupNavigation(allChapters, currentIndex)
-        
+
       } catch (error) {
-        console.error('Erro ao carregar navegação:', error)
+        console.error('Error loading navigation:', error)
         this.navigation = {
           previousChapter: null,
           nextChapter: null,
@@ -234,19 +193,12 @@ export const useReaderStore = defineStore('reader', {
       }
     },
 
-    // Busca flexível para IDs de capítulos
     findChapterFlexible(chapters, targetId) {
-      // Busca flexível
-      
-      // Tentar várias estratégias de busca
       const strategies = [
-        // 1. Busca exata
         (id) => chapters.findIndex(ch => ch.id === id),
-        
-        // 2. Busca parcial (contém)
+
         (id) => chapters.findIndex(ch => ch.id.includes(id) || id.includes(ch.id)),
-        
-        // 3. Busca por número de capítulo extraído
+
         (id) => {
           const match = id.match(/(\d+(?:\.\d+)?)/);
           if (match) {
@@ -255,8 +207,7 @@ export const useReaderStore = defineStore('reader', {
           }
           return -1;
         },
-        
-        // 4. Busca por nome normalizado
+
         (id) => {
           const normalizedId = id.toLowerCase().replace(/[^a-z0-9]/g, '');
           return chapters.findIndex(ch => {
@@ -265,29 +216,25 @@ export const useReaderStore = defineStore('reader', {
           });
         }
       ];
-      
+
       for (let i = 0; i < strategies.length; i++) {
         const index = strategies[i](targetId);
         if (index !== -1) {
-          // Estratégia encontrou capítulo;
           return index;
         }
       }
-      
-      console.warn('Nenhuma estratégia encontrou o capítulo');
+
+      console.warn('No strategy found the chapter');
       return -1;
     },
 
-    // Configurar navegação baseada no índice
     setupNavigation(allChapters, currentIndex) {
       const total = allChapters.length;
-      
-      // Capítulo anterior (índice maior, pois lista está em ordem decrescente)
+
       const previousChapter = currentIndex < total - 1 ? allChapters[currentIndex + 1] : null;
-      
-      // Próximo capítulo (índice menor)
+
       const nextChapter = currentIndex > 0 ? allChapters[currentIndex - 1] : null;
-      
+
       this.navigation = {
         previousChapter: previousChapter ? {
           id: previousChapter.id,
@@ -305,51 +252,45 @@ export const useReaderStore = defineStore('reader', {
         },
         allChapters: allChapters
       };
-      
-      // Navegação configurada;
     },
 
-    // Carregar progresso do capítulo
     async loadChapterProgress(mangaId, chapterId) {
       try {
         const response = await axios.get(`${API_BASE_URL}/api/progress/${mangaId}/${chapterId}`)
         const progressData = response.data.progress
-        
+
         if (progressData) {
           this.currentPage = progressData.current_page || 0
           this.readingProgress[chapterId] = progressData
         } else {
           this.currentPage = 0
         }
-        
+
       } catch (error) {
-        console.warn('Erro ao carregar progresso:', error)
+        console.warn('Error loading progress:', error)
         this.currentPage = 0
       }
     },
 
-    // Salvar progresso
     async saveProgress(mangaId, chapterId) {
       if (!mangaId || !chapterId) return
-      
+
       try {
         const readingTime = this.currentReadingTime
-        
+
         const response = await axios.post(`${API_BASE_URL}/api/progress/${mangaId}/${chapterId}`, {
           current_page: this.currentPage,
           total_pages: this.totalPages,
           reading_time_seconds: readingTime
         })
-        
-        // Atualizar cache local
+
         this.readingProgress[chapterId] = response.data.progress
-                
+
       } catch (error) {
-        console.error('Erro ao salvar progresso:', error)
+        console.error('Error saving progress:', error)
       }
     },
 
-    // Navegação de páginas
     nextPage() {
       if (this.currentPage < this.totalPages - 1) {
         this.currentPage++
@@ -357,7 +298,7 @@ export const useReaderStore = defineStore('reader', {
         this.preloadPages()
         return true
       }
-      return false // Chegou ao final
+      return false
     },
 
     previousPage() {
@@ -366,10 +307,9 @@ export const useReaderStore = defineStore('reader', {
         this.saveProgressDebounced()
         return true
       }
-      return false // Chegou ao início
+      return false
     },
 
-    // Ir para página específica
     goToPage(pageNumber) {
       const page = Math.max(0, Math.min(pageNumber, this.totalPages - 1))
       this.currentPage = page
@@ -377,20 +317,17 @@ export const useReaderStore = defineStore('reader', {
       this.preloadPages()
     },
 
-    // Navegar para porcentagem específica
     seekToProgress(percentage) {
       const targetPage = Math.floor((percentage / 100) * this.totalPages)
       this.goToPage(targetPage)
     },
 
-    // Pré-carregar páginas
     preloadPages() {
       if (!this.currentChapter?.chapter?.pages) return
-      
-      // Pré-carregar próximas 5 páginas
+
       const startIndex = this.currentPage
       const endIndex = Math.min(this.totalPages, this.currentPage + 5)
-      
+
       for (let i = startIndex; i < endIndex; i++) {
         const page = this.currentChapter.chapter.pages[i]
         if (page && !this.preloadedPages.has(page.url)) {
@@ -398,8 +335,7 @@ export const useReaderStore = defineStore('reader', {
           this.preloadedPages.add(page.url)
         }
       }
-      
-      // Limpar cache se muito grande
+
       if (this.preloadedPages.size > this.maxCacheSize) {
         const oldPages = Array.from(this.preloadedPages).slice(0, 10)
         oldPages.forEach(url => {
@@ -409,14 +345,13 @@ export const useReaderStore = defineStore('reader', {
       }
     },
 
-    // Pré-carregar imagem
     preloadImage(url) {
       return new Promise((resolve, reject) => {
         if (this.pageCache.has(url)) {
           resolve(this.pageCache.get(url))
           return
         }
-        
+
         const img = new Image()
         img.onload = () => {
           this.pageCache.set(url, img)
@@ -427,24 +362,21 @@ export const useReaderStore = defineStore('reader', {
       })
     },
 
-    // Configurações de leitura
     updateReadingSettings(settings) {
       Object.assign(this, settings)
       this.saveSettings()
     },
 
-    // Salvar configurações no localStorage
     saveSettings() {
       const settings = {
         readingMode: this.readingMode,
         fitMode: this.fitMode,
         theme: this.theme
       }
-      
+
       localStorage.setItem('ohara_reader_settings', JSON.stringify(settings))
     },
 
-    // Carregar configurações do localStorage
     loadSettings() {
       try {
         const saved = localStorage.getItem('ohara_reader_settings')
@@ -453,11 +385,10 @@ export const useReaderStore = defineStore('reader', {
           Object.assign(this, settings)
         }
       } catch (error) {
-        console.warn('Erro ao carregar configurações:', error)
+        console.warn('Error loading settings:', error)
       }
     },
 
-    // Reset configurações
     resetSettings() {
       this.readingMode = 'vertical'
       this.fitMode = 'original'
@@ -465,25 +396,21 @@ export const useReaderStore = defineStore('reader', {
       this.saveSettings()
     },
 
-    // Configurar modo de leitura (validar apenas modos suportados)
     setReadingMode(mode) {
       if (mode === 'single' || mode === 'vertical') {
         this.readingMode = mode
-        // Configurar fitMode padrão baseado no modo de leitura
         if (mode === 'vertical') {
           this.fitMode = 'original'
         } else if (mode === 'single') {
           this.fitMode = 'screen'
         }
       } else {
-        // Fallback para vertical se modo inválido
         this.readingMode = 'vertical'
         this.fitMode = 'original'
       }
       this.saveSettings()
     },
 
-    // Controles de interface
     toggleFullscreen() {
       this.isFullscreen = !this.isFullscreen
     },
@@ -496,7 +423,6 @@ export const useReaderStore = defineStore('reader', {
       this.showSettings = !this.showSettings
     },
 
-    // Limpar dados do leitor
     clearReader() {
       this.currentManga = null
       this.currentChapter = null
@@ -517,7 +443,7 @@ export const useReaderStore = defineStore('reader', {
       if (this._saveProgressTimeout) {
         clearTimeout(this._saveProgressTimeout)
       }
-      
+
       this._saveProgressTimeout = setTimeout(() => {
         if (this.currentManga && this.currentChapter) {
           this.saveProgress(this.currentManga.id, this.currentChapter.chapter.id)

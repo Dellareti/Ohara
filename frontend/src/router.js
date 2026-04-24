@@ -1,13 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-// Importar views
 const LibraryViewSimple = () => import('@/views/LibraryViewSimple.vue')
 const MangaDetailView = () => import('@/views/MangaDetailView.vue')
 const MangaReaderView = () => import('@/views/MangaReaderView.vue')
 const SettingsView = () => import('@/views/SettingsView.vue')
 const ManualView = () => import('@/views/ManualView.vue')
 
-// Importar componentes
 const LibrarySetup = () => import('@/components/LibrarySetup.vue')
 
 const routes = [
@@ -21,7 +19,7 @@ const routes = [
     name: 'Library',
     component: LibraryViewSimple,
     meta: {
-      title: 'Biblioteca - Ohara'
+      title: 'Library - Ohara'
     }
   },
   {
@@ -29,7 +27,7 @@ const routes = [
     name: 'Setup',
     component: LibrarySetup,
     meta: {
-      title: 'Configurar Biblioteca - Ohara'
+      title: 'Configure Library - Ohara'
     }
   },
   {
@@ -37,7 +35,7 @@ const routes = [
     name: 'Settings',
     component: SettingsView,
     meta: {
-      title: 'Configurações - Ohara'
+      title: 'Settings - Ohara'
     }
   },
   {
@@ -45,7 +43,7 @@ const routes = [
     name: 'Manual',
     component: ManualView,
     meta: {
-      title: 'Manual de Uso - Ohara'
+      title: 'User Manual - Ohara'
     }
   },
   {
@@ -53,7 +51,7 @@ const routes = [
     name: 'MangaDetail',
     component: MangaDetailView,
     meta: {
-      title: 'Detalhes do Mangá - Ohara'
+      title: 'Manga Details - Ohara'
     }
   },
   {
@@ -61,7 +59,7 @@ const routes = [
     name: 'MangaReader',
     component: MangaReaderView,
     meta: {
-      title: 'Leitor - Ohara'
+      title: 'Reader - Ohara'
     }
   }
 ]
@@ -72,13 +70,11 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  
-  // Atualizar título da página
+
   if (to.meta.title) {
     document.title = to.meta.title
   }
-  
-  // Simplesmente permitir navegação
+
   next()
 })
 

@@ -1,180 +1,180 @@
 <template>
   <div class="manual-container">
     <div class="manual-header">
-      <h1>Manual de Uso</h1>
-      <p>Guia completo para usar o seu leitor de mangá</p>
+      <h1>User Manual</h1>
+      <p>Complete guide to using your manga reader</p>
     </div>
 
     <div class="manual-content">
       <section id="getting-started" class="manual-section">
-        <h2>Primeiros Passos</h2>
+        <h2>Getting Started</h2>
         <div class="content-grid">
           <div class="info-card">
-            <h3>1. Configuração Inicial</h3>
-            <p>Acesse <strong>Configurações</strong> no menu principal para definir suas preferências de leitura e interface.</p>
+            <h3>1. Initial Setup</h3>
+            <p>Access <strong>Settings</strong> from the main menu to define your reading and interface preferences.</p>
           </div>
           <div class="info-card">
-            <h3>2. Adicionar Mangás</h3>
-            <p>Use a função de <strong>Setup</strong> para adicionar seus mangás ao sistema.</p>
+            <h3>2. Add Manga</h3>
+            <p>Use the <strong>Setup</strong> function to add your manga to the system.</p>
           </div>
           <div class="info-card">
-            <h3>3. Organização</h3>
-            <p>Para o bom funcionamento do sitema, tende deixar as pastas na estrutura indicada em setup. Não é preciso ter os mesmos nomes, apenas a estrutura.</p>
+            <h3>3. Organization</h3>
+            <p>For the system to work properly, keep your folders in the structure indicated in setup. You don't need the same names, just the structure.</p>
           </div>
         </div>
       </section>
 
       <section id="library" class="manual-section">
-        <h2>Biblioteca</h2>
-        
+        <h2>Library</h2>
+
         <div class="feature-block">
-          <h3>Navegação na Biblioteca</h3>
+          <h3>Library Navigation</h3>
           <ul>
-            <li><strong>Ordenação:</strong> Ordene por A-Z, número de capítulos, progresso de leitura ou favoritos</li>
-            <li><strong>Tamanho dos Cards:</strong> Escolha entre pequeno, médio ou grande</li>
-            <li><strong>Atualizar:</strong> Use a o botão atualizar para recarregar a informações da pasta onde está os mangás</li>
-            <li><strong>Paginação:</strong> Configure quantos itens exibir por página</li>
+            <li><strong>Sorting:</strong> Sort by A-Z, number of chapters, reading progress, or favorites</li>
+            <li><strong>Card Size:</strong> Choose between small, medium, or large</li>
+            <li><strong>Refresh:</strong> Use the refresh button to reload information from the folder where the manga is located</li>
+            <li><strong>Pagination:</strong> Configure how many items to display per page</li>
           </ul>
         </div>
 
         <div class="feature-block">
-          <h3>Detalhes do Mangá</h3>
+          <h3>Manga Details</h3>
           <ul>
-            <li>Informações detalhadas (capítulos, páginas e progresso )</li>
-            <li>Lista completa de capítulos</li>
-            <li>Ordenação</li>
-            <li>Atualizar:Use a o botão atualizar para recarregar a informações da pasta onde está os capítulos</li>
-            <li>Progresso: Registre seu progresso na leitura</li>
-            <li>Opção "Continuar Lendo" para retomar de onde parou</li>
+            <li>Detailed information (chapters, pages, and progress)</li>
+            <li>Full chapter list</li>
+            <li>Sorting</li>
+            <li>Refresh: Use the refresh button to reload information from the folder where the chapters are located</li>
+            <li>Progress: Track your reading progress</li>
+            <li>"Continue Reading" option to resume where you left off</li>
           </ul>
         </div>
       </section>
 
       <section id="reader" class="manual-section">
-        <h2>Leitor</h2>
-        
+        <h2>Reader</h2>
+
         <div class="feature-block">
-          <h3>Modos de Leitura</h3>
+          <h3>Reading Modes</h3>
           <div class="reading-modes">
             <div class="mode-card">
-              <h4>Modo Página Única (horizontal)</h4>
-              <p>Exibe uma página por vez, ideal para mangás tradicionais</p>
+              <h4>Single Page Mode (horizontal)</h4>
+              <p>Displays one page at a time, ideal for traditional manga</p>
             </div>
             <div class="mode-card">
-              <h4>Modo Vertical</h4>
-              <p>Páginas em sequência vertical, perfeito para webtoons</p>
+              <h4>Vertical Mode</h4>
+              <p>Pages in vertical sequence, perfect for webtoons</p>
             </div>
           </div>
         </div>
 
         <div class="feature-block">
-          <h3>Controles do Leitor</h3>
+          <h3>Reader Controls</h3>
           <ul>
-            <li><strong>Navegação:</strong> Clique nas setas ou use as teclas direcionais</li>
-            <li><strong>Zoom:</strong> Use a roda do mouse ou botões para aproximar</li>
-            <li><strong>Tela Cheia:</strong> Pressione F11 ou clique no ícone de tela cheia</li>
-            <li><strong>Menu Rápido:</strong> Clique no centro da tela para acessar controles</li>
+            <li><strong>Navigation:</strong> Click the arrows or use the directional keys</li>
+            <li><strong>Zoom:</strong> Use the mouse wheel or buttons to zoom</li>
+            <li><strong>Fullscreen:</strong> Press F11 or click the fullscreen icon</li>
+            <li><strong>Quick Menu:</strong> Click the center of the screen to access controls</li>
           </ul>
         </div>
       </section>
 
       <section id="settings" class="manual-section">
-        <h2>Configurações</h2>
-        
+        <h2>Settings</h2>
+
         <div class="settings-grid">
           <div class="setting-category">
             <h3>Interface</h3>
             <ul>
-              <li>Tamanho dos cards da biblioteca</li>
-              <li>Itens por página</li>
-              <li>Tema e cores</li>
-            </ul> 
-          </div>
-          
-          <div class="setting-category">
-            <h3>Leitura</h3>
-            <ul>
-              <li>Modo de leitura padrão</li>
-              <li>Ajuste padrão leitura</li>
-              <li>Qualidade das imagens</li>
+              <li>Library card size</li>
+              <li>Items per page</li>
+              <li>Theme and colors</li>
             </ul>
           </div>
-          
+
+          <div class="setting-category">
+            <h3>Reading</h3>
+            <ul>
+              <li>Default reading mode</li>
+              <li>Default reading fit</li>
+              <li>Image quality</li>
+            </ul>
+          </div>
+
           <div class="setting-category">
             <h3>Performance</h3>
             <ul>
-              <li>Cache de imagens</li>
-              <li>Pré-carregamento de páginas</li>
-              <li>Otimizações de memória</li>
+              <li>Image cache</li>
+              <li>Page preloading</li>
+              <li>Memory optimizations</li>
             </ul>
           </div>
         </div>
       </section>
 
       <section id="shortcuts" class="manual-section">
-        <h2>Atalhos de Teclado</h2>
-        
+        <h2>Keyboard Shortcuts</h2>
+
         <div class="shortcuts-grid">
           <div class="shortcut-category">
-            <h3>Navegação Geral</h3>
+            <h3>General Navigation</h3>
             <div class="shortcut-list">
               <div class="shortcut-item">
               </div>
               <div class="shortcut-item">
                 <kbd>Esc</kbd>
-                <span>Fechar modais/menus</span>
+                <span>Close modals/menus</span>
               </div>
               <div class="shortcut-item">
                 <kbd>Alt + ←</kbd>
-                <span>Voltar</span>
+                <span>Back</span>
               </div>
             </div>
           </div>
 
           <div class="shortcut-category">
-            <h3>Leitor</h3>
+            <h3>Reader</h3>
             <div class="shortcut-list">
               <div class="shortcut-item">
                 <kbd>←/→</kbd>
-                <span>Página Anterior/Próxima</span>
+                <span>Previous/Next Page</span>
               </div>
               <div class="shortcut-item">
                 <kbd>↑/↓</kbd>
-                <span>Rolar Página (Modo Vertical)</span>
+                <span>Scroll Page (Vertical Mode)</span>
               </div>
               <div class="shortcut-item">
                 <kbd>h</kbd>
-                <span>Abrir Menu Reader</span>
+                <span>Open Reader Menu</span>
               </div>
               <div class="shortcut-item">
                 <kbd>f</kbd>
-                <span>Tela Cheia</span>
+                <span>Fullscreen</span>
               </div>
               <div class="shortcut-item">
                 <kbd>s</kbd>
-                <span>Abrir Sidebar Settings</span>
+                <span>Open Settings Sidebar</span>
               </div>
               <div class="shortcut-item">
                 <kbd>Space</kbd>
-                <span>Próxima página</span>
+                <span>Next page</span>
               </div>
             </div>
           </div>
 
           <div class="shortcut-category">
-            <h3>Biblioteca</h3>
+            <h3>Library</h3>
             <div class="shortcut-list">
               <div class="shortcut-item">
                 <kbd>F5</kbd>
-                <span>Atualizar biblioteca</span>
+                <span>Refresh library</span>
               </div>
               <div class="shortcut-item">
                 <kbd>Ctrl + F</kbd>
-                <span>Buscar mangá</span>
+                <span>Search manga</span>
               </div>
               <div class="shortcut-item">
                 <kbd>Enter</kbd>
-                <span>Abrir mangá selecionado</span>
+                <span>Open selected manga</span>
               </div>
             </div>
           </div>
@@ -182,40 +182,40 @@
       </section>
 
       <section id="tips" class="manual-section">
-        <h2>Dicas e Truques</h2>
-        
+        <h2>Tips and Tricks</h2>
+
         <div class="tips-grid">
           <div class="tip-card">
             <h3>Performance</h3>
             <ul>
-              <li>Ative o cache de imagens para carregamento mais rápido</li>
-              <li>Use pré-carregamento em conexões rápidas</li>
+              <li>Enable image cache for faster loading</li>
+              <li>Use preloading on fast connections</li>
             </ul>
           </div>
 
           <div class="tip-card">
-            <h3>Leitura</h3>
+            <h3>Reading</h3>
             <ul>
-              <li>Use o modo vertical para webtoons e manhwas</li>
-              <li>Experimente diferentes níveis de zoom para conforto</li>
-              <li>O sistema salva automaticamente seu progresso</li>
+              <li>Use vertical mode for webtoons and manhwas</li>
+              <li>Try different zoom levels for comfort</li>
+              <li>The system automatically saves your progress</li>
             </ul>
           </div>
 
           <div class="tip-card">
-            <h3>Organização</h3>
+            <h3>Organization</h3>
             <ul>
-              <li>Organize por progresso de leitura para continuar onde parou</li>
-              <li>Deixe suas pastas no formato correto (Veja em Setup)</li>
+              <li>Sort by reading progress to continue where you left off</li>
+              <li>Keep your folders in the correct format (See Setup)</li>
             </ul>
           </div>
 
           <div class="tip-card">
-            <h3>Solução de Problemas</h3>
+            <h3>Troubleshooting</h3>
             <ul>
-              <li>Limpe o cache se imagens não carregarem</li>
-              <li>Reescaneie a biblioteca após adicionar novos arquivos</li>
-              <li>Verifique as permissões de pasta se ocorrerem erros</li>
+              <li>Clear the cache if images fail to load</li>
+              <li>Rescan the library after adding new files</li>
+              <li>Check folder permissions if errors occur</li>
             </ul>
           </div>
         </div>
@@ -236,7 +236,7 @@ export default {
     }
   },
   mounted() {
-    document.title = 'Manual de Uso - Ohara';
+    document.title = 'User Manual - Ohara';
   }
 }
 </script>
@@ -503,7 +503,7 @@ kbd {
   font-size: 1.1rem;
 }
 
-/* Responsividade */
+/* Responsive */
 @media (max-width: 768px) {
   .manual-container {
     padding: 15px;
@@ -533,12 +533,12 @@ kbd {
   }
 }
 
-/* Animações suaves */
+/* Smooth animations */
 * {
   transition: all 0.3s ease;
 }
 
-/* Scrollbar personalizada */
+/* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
 }

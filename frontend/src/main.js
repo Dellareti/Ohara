@@ -9,13 +9,13 @@ const app = createApp(App)
 app.config.errorHandler = (error, instance, info) => {
   console.error('Global Error Handler:', error, info)
   const { showError } = useToast()
-  showError(`Erro inesperado: ${error.message || 'Erro desconhecido'}`)
+  showError(`Unexpected error: ${error.message || 'Unknown error'}`)
 }
 
 window.addEventListener('unhandledrejection', (event) => {
   console.error('Unhandled Promise Rejection:', event.reason)
   const { showError } = useToast()
-  showError(`Erro de conexão: ${event.reason?.message || 'Falha na operação'}`)
+  showError(`Connection error: ${event.reason?.message || 'Operation failed'}`)
   event.preventDefault()
 })
 

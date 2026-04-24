@@ -1,50 +1,50 @@
 <template>
   <div class="library-simple">
-    <!-- Header com navegação -->
+    <!-- Header with navigation -->
     <div class="header">
-      <h1>Biblioteca</h1>
+      <h1>Library</h1>
       <div class="header-actions">
-        <!-- Seletor de ordenação -->
-        <select v-model="sortOption" class="sort-select" title="Ordenar por">
-          <option value="alphabetical">A-Z (Padrão)</option>
+        <!-- Sort selector -->
+        <select v-model="sortOption" class="sort-select" title="Sort by">
+          <option value="alphabetical">A-Z (Default)</option>
           <option value="alphabetical-reverse">Z-A</option>
-          <option value="most-read">Mais Lidas</option>
-          <option value="least-read">Menos Lidas</option>
-          <option value="chapters-desc">Mais Capítulos</option>
-          <option value="chapters-asc">Menos Capítulos</option>
-          <option value="date-added">Recém Adicionados</option>
-          <option value="date-modified">Recém Atualizados</option>
+          <option value="most-read">Most Read</option>
+          <option value="least-read">Least Read</option>
+          <option value="chapters-desc">Most Chapters</option>
+          <option value="chapters-asc">Fewest Chapters</option>
+          <option value="date-added">Recently Added</option>
+          <option value="date-modified">Recently Updated</option>
         </select>
         <router-link to="/setup" class="setup-btn">Setup</router-link>
-        <button @click="refreshLibrary" class="refresh-btn">Atualizar</button>
+        <button @click="refreshLibrary" class="refresh-btn">Refresh</button>
       </div>
     </div>
 
     <!-- Loading -->
     <div v-if="libraryStore.loading" class="loading-section">
       <div class="spinner"></div>
-      <p>Carregando biblioteca...</p>
+      <p>Loading library...</p>
     </div>
 
     <ErrorState
       v-if="libraryStore.error"
       :message="libraryStore.error"
-      title="Erro ao Carregar Biblioteca"
+      title="Error Loading Library"
       severity="high"
       :retryable="true"
       :on-retry="loadLibrary"
       compact
     />
 
-    <!-- Biblioteca vazia -->
+    <!-- Empty library -->
     <div v-if="!libraryStore.loading && !libraryStore.error && libraryStore.mangas.length === 0" class="empty-library">
       <div class="empty-icon">📚</div>
-      <h2>Biblioteca Vazia</h2>
-      <p>Configure sua biblioteca para começar a leitura</p>
-      <router-link to="/setup" class="setup-link">Configurar Agora</router-link>
+      <h2>Empty Library</h2>
+      <p>Configure your library to start reading</p>
+      <router-link to="/setup" class="setup-link">Configure Now</router-link>
     </div>
 
-    <!-- Grid de Mangás (usando paginatedMangas) -->
+    <!-- Manga Grid (using paginatedMangas) -->
     <div v-if="!libraryStore.loading && !libraryStore.error && sortedMangas.length > 0" :class="['manga-grid', cardSizeClass]">
       <div 
         v-for="manga in paginatedMangas" 
@@ -67,7 +67,7 @@
         <div class="manga-info">
           <h3>{{ manga.title }}</h3>
           <div class="manga-meta">
-            <span class="chapter-count">{{ manga.chapter_count || 0 }} capítulos</span>
+            <span class="chapter-count">{{ manga.chapter_count || 0 }} chapters</span>
             <span v-if="manga.author" class="author">{{ manga.author }}</span>
             <span v-if="manga.status" class="status" :class="manga.status.toLowerCase()">
               {{ manga.status }}
@@ -82,9 +82,9 @@
       </div>
     </div>
 
-    <!-- Controles de Paginação -->
+    <!-- Pagination Controls -->
     <div v-if="!libraryStore.loading && !libraryStore.error && totalPages > 1" class="pagination">
-      <button @click="prevPage" :disabled="currentPage <= 1" class="page-btn">« Anterior</button>
+      <button @click="prevPage" :disabled="currentPage <= 1" class="page-btn">« Previous</button>
       
       <div class="page-numbers">
         <button 
@@ -105,10 +105,10 @@
         </button>
       </div>
       
-      <button @click="nextPage" :disabled="currentPage >= totalPages" class="page-btn">Próxima »</button>
-      
+      <button @click="nextPage" :disabled="currentPage >= totalPages" class="page-btn">Next »</button>
+
       <div class="page-info">
-        Página {{ currentPage }} de {{ totalPages }} ({{ sortedMangas.length }} mangás)
+        Page {{ currentPage }} of {{ totalPages }} ({{ sortedMangas.length }} manga)
       </div>
     </div>
   </div>
@@ -133,78 +133,69 @@ export default {
     const sortOption = ref('alphabetical')
     const currentPage = ref(1)
 
-    // Função de ordenação natural (números antes de letras, mas mantendo ordem lógica)
     const naturalSort = (a, b) => {
       const aTitle = a.title.toLowerCase()
       const bTitle = b.title.toLowerCase()
-      
-      // Separar em partes numéricas e alfabéticas
+
       const aParts = aTitle.match(/(\d+|\D+)/g) || []
       const bParts = bTitle.match(/(\d+|\D+)/g) || []
-      
+
       const maxLength = Math.max(aParts.length, bParts.length)
-      
+
       for (let i = 0; i < maxLength; i++) {
         const aPart = aParts[i] || ''
         const bPart = bParts[i] || ''
-        
-        // Se ambos são números, comparar numericamente
+
         if (!isNaN(aPart) && !isNaN(bPart)) {
           const diff = parseInt(aPart) - parseInt(bPart)
           if (diff !== 0) return diff
         }
-        // Se um é número e outro não, número vem primeiro
         else if (!isNaN(aPart) && isNaN(bPart)) {
           return -1
         }
         else if (isNaN(aPart) && !isNaN(bPart)) {
           return 1
         }
-        // Ambos são strings, comparar alfabeticamente
         else {
           const diff = aPart.localeCompare(bPart)
           if (diff !== 0) return diff
         }
       }
-      
+
       return 0
     }
 
-    // Computed para mangás ordenados
     const sortedMangas = computed(() => {
       const mangas = [...libraryStore.mangas]
-      
+
       switch (sortOption.value) {
         case 'alphabetical':
           return mangas.sort(naturalSort)
-        
+
         case 'alphabetical-reverse':
           return mangas.sort((a, b) => -naturalSort(a, b))
-        
+
         case 'most-read':
           return mangas.sort((a, b) => {
-            // Ordenar por progresso de leitura (capítulos lidos)
             const aProgress = a.reading_progress?.chapters_read || 0
             const bProgress = b.reading_progress?.chapters_read || 0
             if (aProgress !== bProgress) {
-              return bProgress - aProgress // Mais lidas primeiro
+              return bProgress - aProgress
             }
-            // Se empate, ordenar por páginas lidas
             const aPages = a.reading_progress?.pages_read || 0
             const bPages = b.reading_progress?.pages_read || 0
             if (aPages !== bPages) {
               return bPages - aPages
             }
-            // Se ainda empate, ordenar alfabeticamente
             return naturalSort(a, b)
           })
-        
+
         case 'least-read':
           return mangas.sort((a, b) => {
             const aProgress = a.reading_progress?.chapters_read || 0
             const bProgress = b.reading_progress?.chapters_read || 0
             if (aProgress !== bProgress) {
-              return aProgress - bProgress // Menos lidas primeiro
+              return aProgress - bProgress
             }
             const aPages = a.reading_progress?.pages_read || 0
             const bPages = b.reading_progress?.pages_read || 0
@@ -213,41 +204,40 @@ export default {
             }
             return naturalSort(a, b)
           })
-        
+
         case 'chapters-desc':
           return mangas.sort((a, b) => {
             const diff = (b.chapter_count || 0) - (a.chapter_count || 0)
             return diff !== 0 ? diff : naturalSort(a, b)
           })
-        
+
         case 'chapters-asc':
           return mangas.sort((a, b) => {
             const diff = (a.chapter_count || 0) - (b.chapter_count || 0)
             return diff !== 0 ? diff : naturalSort(a, b)
           })
-        
+
         case 'date-added':
           return mangas.sort((a, b) => {
             const dateA = new Date(a.date_added || 0)
             const dateB = new Date(b.date_added || 0)
-            const diff = dateB - dateA // Mais recentes primeiro
+            const diff = dateB - dateA
             return diff !== 0 ? diff : naturalSort(a, b)
           })
-        
+
         case 'date-modified':
           return mangas.sort((a, b) => {
             const dateA = new Date(a.date_modified || 0)
             const dateB = new Date(b.date_modified || 0)
-            const diff = dateB - dateA // Mais recentes primeiro
+            const diff = dateB - dateA
             return diff !== 0 ? diff : naturalSort(a, b)
           })
-        
+
         default:
-          return mangas.sort(naturalSort) // Padrão: alfabética
+          return mangas.sort(naturalSort)
       }
     })
 
-    // Computed para estatísticas
     const totalMangaPages = computed(() => {
       return sortedMangas.value.reduce((sum, manga) => sum + (manga.total_pages || 0), 0)
     })
@@ -256,7 +246,6 @@ export default {
       return sortedMangas.value.reduce((sum, manga) => sum + (manga.chapter_count || 0), 0)
     })
 
-    // Computed para paginação
     const paginatedMangas = computed(() => {
       const itemsPerPage = settingsStore.interface.itemsPerPage
       const startIndex = (currentPage.value - 1) * itemsPerPage
@@ -268,17 +257,15 @@ export default {
       return Math.ceil(sortedMangas.value.length / settingsStore.interface.itemsPerPage)
     })
 
-    // Computed para classes de tamanho de card
     const cardSizeClass = computed(() => {
       return `card-size-${settingsStore.interface.cardSize}`
     })
 
-    // Methods
     const loadLibrary = async () => {
       try {
         await libraryStore.fetchLibrary()
       } catch (error) {
-        console.error('Erro ao carregar biblioteca:', error)
+        console.error('Error loading library:', error)
       }
     }
 
@@ -287,7 +274,7 @@ export default {
         try {
           await libraryStore.scanLibrary()
         } catch (error) {
-          console.error('Erro ao atualizar biblioteca:', error)
+          console.error('Error refreshing library:', error)
         }
       } else {
         await loadLibrary()
@@ -324,12 +311,10 @@ export default {
       return pages.toString()
     }
 
-    // Salvar preferência de ordenação
     const saveSortPreference = () => {
       localStorage.setItem('manga-library-sort', sortOption.value)
     }
 
-    // Carregar preferência de ordenação
     const loadSortPreference = () => {
       const saved = localStorage.getItem('manga-library-sort')
       if (saved) {
@@ -337,7 +322,6 @@ export default {
       }
     }
 
-    // Métodos de paginação
     const nextPage = () => {
       if (currentPage.value < totalPages.value) {
         currentPage.value++
@@ -356,23 +340,19 @@ export default {
       }
     }
 
-    // Reset página quando filtro mudar
     watch(sortOption, () => {
       currentPage.value = 1
     })
 
-    // Watch para salvar preferência quando mudar
     watch(sortOption, () => {
       saveSortPreference()
     })
 
-    // Lifecycle
     onMounted(async () => {
       loadSortPreference()
       settingsStore.loadSettings()
       libraryStore.loadLibraryConfig()
-      
-      // Usar cache se disponível, só recarregar se necessário
+
       if (!libraryStore.isInitialized || libraryStore.mangas.length === 0) {
         if (libraryStore.libraryPath) {
           await refreshLibrary()
@@ -714,7 +694,7 @@ export default {
   }
 }
 
-/* Tamanhos de Cards */
+/* Card Sizes */
 .manga-grid.card-size-small {
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
 }
@@ -739,7 +719,7 @@ export default {
   height: 400px;
 }
 
-/* Paginação */
+/* Pagination */
 .pagination {
   display: flex;
   align-items: center;

@@ -4,15 +4,15 @@ import { resolve } from 'path'
 
 export default defineConfig({
   plugins: [vue()],
-  
-  // Configurações do servidor de desenvolvimento
+
+  // Development server settings
   server: {
     host: true,
     port: 5173,
-    open: true, // Abre automaticamente no browser
-    strictPort: true, // Falha se a porta estiver em uso
-    
-    // Proxy para API do backend
+    open: true, // Automatically opens browser
+    strictPort: true, // Fail if port is already in use
+
+    // Proxy to the backend API
     proxy: {
       '/api': {
         target: 'http://localhost:8000',
@@ -24,15 +24,15 @@ export default defineConfig({
       }
     }
   },
-  
+
   // Resolve alias
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src')
     }
   },
-  
-  // Build configurações
+
+  // Build settings
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
@@ -42,11 +42,11 @@ export default defineConfig({
       }
     }
   },
-  
-  // Root do projeto (importante para SPAs)
+
+  // Project root (important for SPAs)
   root: './',
   publicDir: 'public',
-  
-  // Configurações específicas para SPA
+
+  // SPA-specific settings
   appType: 'spa'
 })

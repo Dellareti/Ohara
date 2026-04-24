@@ -11,9 +11,9 @@
         </div>
         
         <div class="nav-links">
-          <router-link to="/" class="nav-link">Biblioteca</router-link>
+          <router-link to="/" class="nav-link">Library</router-link>
           <router-link to="/setup" class="nav-link">Setup</router-link>
-          <router-link to="/settings" class="nav-link">Configurações</router-link>
+          <router-link to="/settings" class="nav-link">Settings</router-link>
           <router-link to="/manual" class="nav-link">Manual</router-link>
         </div>
       </nav>
@@ -21,13 +21,13 @@
 
     <!-- Main Content Area -->
     <main class="app-main">
-      <!-- Vue Router View - aqui as páginas são renderizadas -->
+      <!-- Vue Router View - pages are rendered here -->
       <router-view />
     </main>
 
     <!-- Footer -->
     <footer class="app-footer">
-      <p>Ohara Manga Reader - Leia suas histórias favoritas</p>
+      <p>Ohara Manga Reader - Read your favorite stories</p>
     </footer>
 
     <div class="toast-container">
@@ -71,11 +71,9 @@ export default {
       }
     }
     
-    // Verificar API na inicialização
     onMounted(() => {
       checkConnection()
-      
-      // Verificar conexão periodicamente
+
       setInterval(checkConnection, 30000)
     })
     
@@ -117,7 +115,7 @@ body:has(.manga-reader) .app-footer {
   display: none !important;
 }
 
-/* Quando a página é de leitura, remover padding do main */
+/* When on the reader page, remove padding from main */
 body:has(.manga-reader) .app-main {
   padding: 0;
   margin: 0;

@@ -1,9 +1,9 @@
 <template>
   <div class="test-component">
-    <h2>Componente de Teste</h2>
-    <p>Se você está vendo isto, o Vue.js está funcionando!</p>
-    <button @click="testClick">Clique aqui</button>
-    <p v-if="clicked">Clique funcionou!</p>
+    <h2>Test Component</h2>
+    <p>If you can see this, Vue.js is working!</p>
+    <button @click="testClick">Click here</button>
+    <p v-if="clicked">Click worked!</p>
   </div>
 </template>
 
