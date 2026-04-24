@@ -7,50 +7,77 @@ from app.models.manga import Chapter
 
 class ChapterParser:
     """
-    Parser especializado para análise e processamento de capítulos de mangá.
+    Specialized parser for manga chapter analysis and processing.
     
-    Responsável por:
-    - Análise de nomes de capítulos usando regex
-    - Extração de números de capítulo e volume
-    - Ordenação natural de capítulos
-    - Determinação de numeração sequencial
+    Responsible for:
+    - Chapter name parsing using regex
+    - Extracting chapter and volume numbers
+    - Natural chapter sorting
+    - Sequential numbering determination
     """
     
     @staticmethod
     def parse_chapter_name_enhanced(chapter_name: str) -> Dict:
         """
-        Parser avançado de nomes de capítulos com suporte a múltiplos padrões.
-        
-        Detecta automaticamente números de capítulo e volume usando regex
-        otimizadas. Suporta padrões em português, inglês e variações comuns
-        encontradas em bibliotecas de mangá.
-        
+        Advanced chapter name parser with support for multiple patterns and languages.
+
+        Automatically detects chapter and volume numbers using optimized regex.
+
         Args:
-            chapter_name (str): Nome do diretório do capítulo
-            
+            chapter_name (str): Chapter directory name
+
         Returns:
             Dict: {
-                'number': float ou None - Número do capítulo detectado
-                'volume': int ou None - Número do volume (se presente)
+                'number': float or None - Detected chapter number
+                'volume': int or None - Volume number (if present)
             }
-            
-        Supported Patterns:
-            - "Vol. 1, Ch. 15" / "Volume 1 Chapter 15"
-            - "Capítulo 1" / "Chapter 1" / "Ch. 1"
-            - "001" / "1 - Título" / "1.5"
-            - Case-insensitive matching
-            - Suporte a capítulos decimais (1.5, 2.1)
+
+        Supported languages:
+            - English: "Chapter 1", "Ch. 1", "Vol. 1 Ch. 15"
+            - Portuguese: "Capítulo 1", "Cap. 1", "Tomo 1 Capítulo 2"
+            - Spanish: "Capítulo 1", "Cap. 1", "Tomo 1 Capítulo 2"
+            - French: "Chapitre 1", "Chap. 1", "Tome 1 Chapitre 2"
+            - German: "Kapitel 1", "Kap. 1", "Band 1 Kapitel 2"
+            - Italian: "Capitolo 1", "Cap. 1", "Tomo 1 Capitolo 2"
+            - Russian: "Глава 1", "Гл. 1", "Том 1 Глава 2"
+            - Japanese: "第1話", "第1章", "1話"
+            - Chinese: "第1章", "第1回", "第1话"
+            - Hindi: "अध्याय 1", "भाग 1"
+            - Arabic: "الفصل 1", "فصل 1"
+            - Numeric: "001", "1 - Title", "1.5"
         """
         info = {'number': None, 'volume': None}
-        
+
         enhanced_patterns = [
-            r'[Vv]ol\.?\s*(\d+)[,]?\s*[Cc]h\.?\s*(\d+\.?\d*)',  # "Vol. 1, Ch. 15"
-            r'Volume\s*(\d+)\s*Chapter\s*(\d+\.?\d*)',  # "Volume 1 Chapter 1"
-            r'[Cc]hapter\s*(\d+\.?\d*)',  # "Chapter 1"
-            r'[Cc]ap[ií]tulo\s*(\d+\.?\d*)',  # "Capítulo 1"
-            r'[Cc]h\.?\s*(\d+\.?\d*)',  # "Ch. 1"
-            r'^(\d+\.?\d*)(?:\s*[-_].*)?',  # "1 - Título"
-            r'(\d+\.?\d*)(?:\s|$)',  # Números soltos
+            # Combined Volume + Chapter
+            r'[Vv]ol\.?\s*(\d+)[,]?\s*[Cc]h\.?\s*(\d+\.?\d*)',                  # EN: "Vol. 1, Ch. 15"
+            r'Volume\s*(\d+)\s*Chapter\s*(\d+\.?\d*)',                          # EN: "Volume 1 Chapter 1"
+            r'[Tt]ome\s*(\d+)\s*[Cc]hap(?:itre)?\.?\s*(\d+\.?\d*)',             # FR: "Tome 1 Chapitre 2"
+            r'[Bb]and\s*(\d+)\s*[Kk]ap(?:itel)?\.?\s*(\d+\.?\d*)',              # DE: "Band 1 Kapitel 2"
+            r'[Tt]omo\s*(\d+)\s*[Cc]ap(?:[ií]tulo|itolo)?\.?\s*(\d+\.?\d*)',    # PT/ES/IT: "Tomo 1 Capítulo 2"
+            r'[Тт]ом\s*(\d+)\s*[Гг]л(?:ава)?\.?\s*(\d+\.?\d*)',                 # RU: "Том 1 Глава 2"
+            # Single chapter (long form)
+            r'[Cc]hapter\s*(\d+\.?\d*)',                                         # EN: "Chapter 1"
+            r'[Cc]ap[ií]tulo\s*(\d+\.?\d*)',                                     # PT/ES: "Capítulo 1"
+            r'[Cc]hapitre\s*(\d+\.?\d*)',                                        # FR: "Chapitre 1"
+            r'[Kk]apitel\s*(\d+\.?\d*)',                                         # DE: "Kapitel 1"
+            r'[Cc]apitolo\s*(\d+\.?\d*)',                                        # IT: "Capitolo 1"
+            r'[Гг]лава\s*(\d+\.?\d*)',                                           # RU: "Глава 1"
+            r'第\s*(\d+\.?\d*)\s*[話章回话節节]',                                    # JA/ZH: "第1話"
+            r'(\d+\.?\d*)\s*[話章回话]',                                           # JA/ZH: "1話"
+            r'अध्याय\s*(\d+\.?\d*)',                                             # HI: "अध्याय 1"
+            r'भाग\s*(\d+\.?\d*)',                                                 # HI: "भाग 1"
+            r'الفصل\s*(\d+\.?\d*)',                                              # AR: "الفصل 1"
+            r'فصل\s*(\d+\.?\d*)',                                                # AR: "فصل 1"
+            # Short abbreviations
+            r'[Cc]hap\.?\s*(\d+\.?\d*)',                                         # FR: "Chap. 1"
+            r'[Cc]h\.?\s*(\d+\.?\d*)',                                           # EN: "Ch. 1"
+            r'[Cc]ap\.?\s*(\d+\.?\d*)',                                          # PT/ES/IT: "Cap. 1"
+            r'[Kk]ap\.?\s*(\d+\.?\d*)',                                          # DE: "Kap. 1"
+            r'[Гг]л\.?\s*(\d+\.?\d*)',                                           # RU: "Гл. 1"
+            # Numeric fallbacks
+            r'^(\d+\.?\d*)(?:\s*[-_].*)?',                                       # "1 - Title"
+            r'(\d+\.?\d*)(?:\s|$)',                                              # Loose numbers
         ]
 
         for pattern in enhanced_patterns:
@@ -77,13 +104,13 @@ class ChapterParser:
     @staticmethod
     def parse_chapter_name(chapter_name: str) -> Dict:
         """
-        Parser básico de nomes de capítulos usando padrões de configuração.
+        Basic chapter name parser using configuration patterns.
         
         Args:
-            chapter_name (str): Nome do capítulo
+            chapter_name (str): Chapter name
             
         Returns:
-            Dict: Informações extraídas do nome
+            Dict: Information extracted from the name
         """
         info = {'number': None, 'volume': None}
         
@@ -110,13 +137,13 @@ class ChapterParser:
     @staticmethod
     def sort_chapters(chapters: List[Chapter]) -> List[Chapter]:
         """
-        Ordena capítulos por número (decrescente) e depois por nome.
+        Sorts chapters by number (descending) then by name.
         
         Args:
-            chapters (List[Chapter]): Lista de capítulos para ordenar
+            chapters (List[Chapter]): List of chapters to sort
             
         Returns:
-            List[Chapter]: Lista ordenada de capítulos
+            List[Chapter]: Sorted list of chapters
         """
         def sort_key(chapter):
             if chapter.number is not None:
@@ -130,16 +157,16 @@ class ChapterParser:
     def determine_chapter_number(chapter_info: dict, sequential_index: int, 
                                page_count: int, chapter_name: str) -> str:
         """
-        Determinar número do capítulo usando múltiplas estratégias.
+        Determine chapter number using multiple strategies.
         
         Args:
-            chapter_info (dict): Informações extraídas do parsing
-            sequential_index (int): Índice sequencial do capítulo
-            page_count (int): Número de páginas do capítulo
-            chapter_name (str): Nome original do capítulo
+            chapter_info (dict): Information extracted from parsing
+            sequential_index (int): Sequential index of the chapter
+            page_count (int): Number of pages in the chapter
+            chapter_name (str): Original chapter name
             
         Returns:
-            str: Número do capítulo determinado
+            str: Determined chapter number
         """
         if chapter_info['number'] is not None:
             return str(chapter_info['number'])
@@ -149,19 +176,19 @@ class ChapterParser:
     @staticmethod
     def natural_sort_key(text: str) -> List:
         """
-        Gera chave de ordenação natural para strings com números.
+        Generates a natural sort key for strings containing numbers.
         
-        Implementa algoritmo de ordenação natural que trata números como
-        inteiros em vez de strings, garantindo ordem lógica:
+        Implements a natural sort algorithm that treats numbers as
+        integers instead of strings, ensuring logical order:
         
-        Ordenação alfabética: ["1", "10", "2", "20"]
-        Ordenação natural: ["1", "2", "10", "20"]
+        Alphabetical sort: ["1", "10", "2", "20"]
+        Natural sort:      ["1", "2", "10", "20"]
         
         Args:
-            text (str): String a ser convertida para chave de ordenação
+            text (str): String to be converted to sort key
             
         Returns:
-            List: Lista mista de inteiros e strings para ordenação
+            List: Mixed list of integers and strings for sorting
         """
         def convert(text):
             return int(text) if text.isdigit() else text.lower()

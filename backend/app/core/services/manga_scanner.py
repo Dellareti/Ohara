@@ -3,7 +3,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import List, Optional
 
-from app.core.config import get_settings, SUPPORTED_IMAGE_EXTENSIONS
+from app.core.config import get_settings, SUPPORTED_IMAGE_EXTENSIONS, THUMBNAIL_FILENAMES
 from app.core.services.simple_cache import SimpleCache
 from app.core.services.chapter_parser import ChapterParser
 from app.models.manga import Manga, Chapter, Page, Library
@@ -13,12 +13,12 @@ logger = logging.getLogger(__name__)
 
 class MangaScanner:
     """
-    Scanner simplificado e eficiente de mangás.
+    Simplified and efficient manga scanner.
     
-    Funcionalidades essenciais:
-    - Escaneamento de bibliotecas de mangás
-    - Cache simples baseado em timestamp
-    - Descoberta de estruturas de mangá
+    Core features:
+    - Manga library scanning
+    - Simple timestamp-based cache
+    - Manga structure discovery
     """
     
     def __init__(self):
@@ -26,30 +26,30 @@ class MangaScanner:
         self.supported_extensions = SUPPORTED_IMAGE_EXTENSIONS
         self.cache_enabled = True
         
-        # Componentes essenciais
+        # Core components
         self.cache = SimpleCache()
         self.chapter_parser = ChapterParser()
         
-        logger.info("MangaScanner inicializado (modo simplificado)")
+        logger.info("MangaScanner initialized (simplified mode)")
 
     def scan_library(self, library_path: str) -> Library:
-        """Escaneia uma biblioteca de mangás com cache simples"""
+        """Scans a manga library with simple cache"""
         library_path_obj = Path(library_path)
         
         if not library_path_obj.exists():
-            raise ValueError(f"Biblioteca não encontrada: {library_path}")
+            raise ValueError(f"Library not found: {library_path}")
         
-        # Carregar cache se habilitado
+        # Load cache if enabled
         cache_data = {}
         if self.cache_enabled:
             cache_file = library_path_obj / self.cache.cache_file_name
             cache_data = self.cache.load_cache(cache_file)
         
-        # Descobrir diretórios de mangá
+        # Discover manga directories
         manga_dirs = self._discover_manga_directories(library_path_obj)
-        logger.info(f"Encontrados {len(manga_dirs)} diretórios de mangá")
+        logger.info(f"Found {len(manga_dirs)} manga directories")
         
-        # Processar mangás
+        # Process manga titles
         mangas = []
         cache_hits = 0
         
@@ -57,47 +57,47 @@ class MangaScanner:
             manga_id = self._generate_manga_id(manga_dir.name)
             cache_entry = cache_data.get(manga_id)
             
-            # Tentar usar cache
+            # Try to use cache
             if self.cache_enabled and self.cache.is_valid(manga_dir, cache_entry):
                 manga = self.cache.restore_manga(cache_entry['manga_data'])
                 if manga:
-                    # Recriar páginas se necessário
+                    # Reload pages if necessary
                     self._ensure_pages_loaded(manga)
                     mangas.append(manga)
                     cache_hits += 1
                     continue
             
-            # Escanear mangá
+            # Scan manga
             manga = self.scan_manga(str(manga_dir))
             if manga:
                 mangas.append(manga)
         
-        # Salvar cache atualizado
+        # Save updated cache
         if self.cache_enabled and mangas:
             self.cache.save_cache(library_path_obj / self.cache.cache_file_name, mangas)
         
-        logger.info(f"Biblioteca escaneada: {len(mangas)} mangás ({cache_hits} do cache)")
+        logger.info(f"Library scanned: {len(mangas)} manga titles ({cache_hits} from cache)")
         
         library = Library(mangas=mangas)
         library._update_stats()
         return library
     
     def scan_manga(self, manga_path: str) -> Optional[Manga]:
-        """Escaneia um mangá específico"""
+        """Scans a specific manga"""
         manga_path_obj = Path(manga_path)
         
         if not manga_path_obj.exists():
             return None
         
         try:
-            # Descobrir capítulos
+            # Discover chapters
             chapter_dirs = self._discover_chapter_directories(manga_path_obj)
             
             if not chapter_dirs:
-                logger.warning(f"Nenhum capítulo encontrado em: {manga_path_obj.name}")
+                logger.warning(f"No chapters found in: {manga_path_obj.name}")
                 return None
             
-            # Processar capítulos
+            # Process chapters
             chapters = []
             total_pages = 0
             
@@ -110,13 +110,13 @@ class MangaScanner:
             if not chapters:
                 return None
             
-            # Ordenar capítulos
+            # Sort chapters
             chapters = self.chapter_parser.sort_chapters(chapters)
             
-            # Encontrar thumbnail
+            # Find thumbnail
             thumbnail = self._find_thumbnail(manga_path_obj)
             
-            # Criar mangá
+            # Create manga
             manga = Manga(
                 id=self._generate_manga_id(manga_path_obj.name),
                 title=manga_path_obj.name,
@@ -132,29 +132,29 @@ class MangaScanner:
             return manga
             
         except Exception as e:
-            logger.error(f"Erro ao escanear mangá {manga_path_obj.name}: {e}")
+            logger.error(f"Error scanning manga {manga_path_obj.name}: {e}")
             return None
     
     def enable_cache(self):
-        """Habilitar cache"""
+        """Enable cache"""
         self.cache_enabled = True
-        logger.info("Cache habilitado")
+        logger.info("Cache enabled")
     
     def disable_cache(self):
-        """Desabilitar cache"""
+        """Disable cache"""
         self.cache_enabled = False
-        logger.info("Cache desabilitado")
+        logger.info("Cache disabled")
     
     def clear_cache(self, library_path: str) -> bool:
-        """Limpar cache da biblioteca"""
+        """Clear library cache"""
         return self.cache.clear_cache(library_path)
     
     def get_cache_info(self, library_path: str) -> dict:
-        """Obter informações do cache"""
+        """Get cache information"""
         return self.cache.get_cache_info(library_path)
     
     def _discover_manga_directories(self, library_path: Path) -> List[Path]:
-        """Descobrir diretórios de mangá"""
+        """Discover manga directories"""
         manga_dirs = []
         
         try:
@@ -162,35 +162,35 @@ class MangaScanner:
                 if item.is_dir() and not item.name.startswith('.'):
                     manga_dirs.append(item)
         except OSError as e:
-            logger.error(f"Erro ao ler biblioteca: {e}")
+            logger.error(f"Error reading library: {e}")
         
         return sorted(manga_dirs)
     
     def _discover_chapter_directories(self, manga_path: Path) -> List[Path]:
-        """Descobrir diretórios de capítulos"""
+        """Discover chapter directories"""
         chapter_dirs = []
         
         try:
             for item in manga_path.iterdir():
                 if item.is_dir():
-                    # Verificar se tem imagens
+                    # Check if it has images
                     if self._has_images(item):
                         chapter_dirs.append(item)
         except OSError as e:
-            logger.error(f"Erro ao ler mangá: {e}")
+            logger.error(f"Error reading manga: {e}")
         
         return chapter_dirs
     
     def _scan_chapter(self, chapter_path: Path) -> Optional[Chapter]:
-        """Escanear um capítulo"""
+        """Scan a chapter"""
         try:
-            # Encontrar imagens
+            # Find images
             image_files = self._find_image_files(chapter_path)
             
             if not image_files:
                 return None
             
-            # Criar páginas
+            # Create pages
             pages = []
             for i, image_file in enumerate(image_files, 1):
                 page = Page(
@@ -201,10 +201,10 @@ class MangaScanner:
                 )
                 pages.append(page)
             
-            # Analisar capítulo
+            # Parse chapter
             chapter_info = self.chapter_parser.parse_chapter_name(chapter_path.name)
             
-            # Gerar ID limpo para capítulo
+            # Generate clean chapter ID
             manga_id = self._generate_manga_id(chapter_path.parent.name)
             chapter_number = chapter_info.get('number', 0)
             chapter_id = f"{manga_id}-ch-{int(chapter_number) if chapter_number else 1}"
@@ -223,24 +223,24 @@ class MangaScanner:
             return chapter
             
         except Exception as e:
-            logger.error(f"Erro ao escanear capítulo {chapter_path.name}: {e}")
+            logger.error(f"Error scanning chapter {chapter_path.name}: {e}")
             return None
     
     def _find_thumbnail(self, manga_path: Path) -> Optional[str]:
-        """Encontrar thumbnail do mangá"""
-        # Procurar na pasta raiz
+        """Find manga thumbnail"""
+        # Search in root folder for conventional cover filenames in multiple languages
         for ext in self.supported_extensions:
-            for pattern in ['cover', 'capa', 'thumb', 'thumbnail']:
+            for pattern in THUMBNAIL_FILENAMES:
                 thumb_file = manga_path / f"{pattern}.{ext}"
                 if thumb_file.exists():
                     return str(thumb_file)
         
-        # Usar primeira imagem da pasta raiz
+        # Use first image in root folder
         for file in manga_path.iterdir():
             if file.is_file() and file.suffix.lower() in self.supported_extensions:
                 return str(file)
         
-        # Usar primeira página do primeiro capítulo
+        # Use first page of first chapter
         chapter_dirs = self._discover_chapter_directories(manga_path)
         if chapter_dirs:
             first_chapter = sorted(chapter_dirs)[0]
@@ -251,7 +251,7 @@ class MangaScanner:
         return None
     
     def _find_image_files(self, directory: Path) -> List[Path]:
-        """Encontrar arquivos de imagem em um diretório"""
+        """Find image files in a directory"""
         image_files = []
         
         try:
@@ -264,7 +264,7 @@ class MangaScanner:
         return sorted(image_files)
     
     def _has_images(self, directory: Path) -> bool:
-        """Verificar se diretório tem imagens"""
+        """Check if directory has images"""
         try:
             for file in directory.iterdir():
                 if file.is_file() and file.suffix.lower() in self.supported_extensions:
@@ -275,7 +275,7 @@ class MangaScanner:
         return False
     
     def _ensure_pages_loaded(self, manga: Manga) -> None:
-        """Garantir que páginas estão carregadas para mangá do cache"""
+        """Ensure pages are loaded for manga from cache"""
         for chapter in manga.chapters:
             if not chapter.pages:
                 chapter_path = Path(chapter.path)
@@ -296,7 +296,7 @@ class MangaScanner:
                     chapter.page_count = len(pages)
     
     def _generate_manga_id(self, manga_name: str) -> str:
-        """Gerar ID legível para mangá (compatível com sistema anterior)"""
+        """Generate readable ID for manga (compatible with previous system)"""
         import re
         clean_title = manga_name.lower()
         clean_title = re.sub(r'\W+', '-', clean_title)
@@ -305,20 +305,20 @@ class MangaScanner:
     
     @staticmethod
     def validate_library_path(path: str) -> tuple[bool, str]:
-        """Validar caminho de biblioteca"""
+        """Validate library path"""
         from pathlib import Path
         
         path_obj = Path(path)
         
         if not path_obj.exists():
-            return False, "Caminho não existe"
+            return False, "Path does not exist"
         
         if not path_obj.is_dir():
-            return False, "Caminho não é um diretório"
+            return False, "Path is not a directory"
         
         manga_dirs = [d for d in path_obj.iterdir() if d.is_dir() and not d.name.startswith('.')]
         
         if not manga_dirs:
-            return False, "Nenhuma pasta de mangá encontrada"
+            return False, "No manga folders found"
         
-        return True, "Caminho válido"
+        return True, "Valid path"

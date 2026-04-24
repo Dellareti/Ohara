@@ -10,25 +10,66 @@ class TestChapterParserMethods:
 
     def test_parse_chapter_name_enhanced__comprehensive(self):
         test_cases = [
-            # Formatos básicos
+            # English
             ("Chapter 001", {"number": 1.0, "volume": None}),
-            ("Capítulo 2", {"number": 2.0, "volume": None}),
             ("Ch. 3", {"number": 3.0, "volume": None}),
 
-            # Formatos com volume
+            # Portuguese
+            ("Capítulo 2", {"number": 2.0, "volume": None}),
+            ("Capitulo 2", {"number": 2.0, "volume": None}),
+            ("Cap. 7", {"number": 7.0, "volume": None}),
+
+            # Spanish
+            ("Capítulo 4", {"number": 4.0, "volume": None}),
+
+            # French
+            ("Chapitre 5", {"number": 5.0, "volume": None}),
+            ("Chap. 6", {"number": 6.0, "volume": None}),
+
+            # German
+            ("Kapitel 8", {"number": 8.0, "volume": None}),
+            ("Kap. 9", {"number": 9.0, "volume": None}),
+
+            # Italian
+            ("Capitolo 10", {"number": 10.0, "volume": None}),
+
+            # Russian
+            ("Глава 11", {"number": 11.0, "volume": None}),
+            ("Гл. 12", {"number": 12.0, "volume": None}),
+
+            # Japanese / Chinese
+            ("第1話", {"number": 1.0, "volume": None}),
+            ("第13章", {"number": 13.0, "volume": None}),
+            ("第14回", {"number": 14.0, "volume": None}),
+            ("15話", {"number": 15.0, "volume": None}),
+
+            # Hindi
+            ("अध्याय 16", {"number": 16.0, "volume": None}),
+            ("भाग 17", {"number": 17.0, "volume": None}),
+
+            # Arabic
+            ("الفصل 18", {"number": 18.0, "volume": None}),
+            ("فصل 19", {"number": 19.0, "volume": None}),
+
+            # Formats with volume
             ("Vol. 1, Ch. 15", {"number": 15.0, "volume": 1}),
             ("Volume 2 Chapter 5", {"number": 5.0, "volume": 2}),
             ("Vol 3 Ch 10", {"number": 10.0, "volume": 3}),
+            ("Tome 4 Chapitre 20", {"number": 20.0, "volume": 4}),
+            ("Band 5 Kapitel 21", {"number": 21.0, "volume": 5}),
+            ("Tomo 6 Capítulo 22", {"number": 22.0, "volume": 6}),
+            ("Tomo 7 Capitolo 23", {"number": 23.0, "volume": 7}),
+            ("Том 8 Глава 24", {"number": 24.0, "volume": 8}),
 
-            # Formatos numéricos
-            ("001 - Título", {"number": 1.0, "volume": None}),
+            # Numeric formats
+            ("001 - Title", {"number": 1.0, "volume": None}),
             ("025", {"number": 25.0, "volume": None}),
 
-            # Capítulos especiais
+            # Special chapters
             ("Chapter 1.5", {"number": 1.5, "volume": None}),
             ("Ch. 0.1", {"number": 0.1, "volume": None}),
 
-            # Casos sem match
+            # No match cases
             ("Random Text", {"number": None, "volume": None}),
             ("Extra Chapter", {"number": None, "volume": None}),
             ("", {"number": None, "volume": None})
@@ -36,12 +77,11 @@ class TestChapterParserMethods:
 
         for chapter_name, expected in test_cases:
             result = self.parser.parse_chapter_name_enhanced(chapter_name)
-            assert result["number"] == expected["number"], f"Falhou para: '{chapter_name}'"
+            assert result["number"] == expected["number"], f"Failed for: '{chapter_name}' (got {result})"
             if expected["volume"] is not None:
-                assert result["volume"] == expected["volume"], f"Volume falhou para: '{chapter_name}'"
+                assert result["volume"] == expected["volume"], f"Volume failed for: '{chapter_name}' (got {result})"
 
     def test_parse_chapter_name__basic_patterns(self):
-        # Teste o parser básico para compatibilidade
         result = self.parser.parse_chapter_name("Chapter 1")
         assert result["number"] == 1.0
         assert result["volume"] is None
@@ -79,15 +119,15 @@ class TestChapterParserMethods:
 
     def test_natural_sort_key__comprehensive(self):
         test_cases = [
-            # Caso 1: Páginas numeradas
+            # Case 1: Numbered pages
             (["page1.jpg", "page10.jpg", "page2.jpg", "page21.jpg"],
              ["page1.jpg", "page2.jpg", "page10.jpg", "page21.jpg"]),
 
-            # Caso 2: Capítulos
+            # Case 2: Chapters
             (["ch1", "ch10", "ch2", "ch100", "ch3"],
              ["ch1", "ch2", "ch3", "ch10", "ch100"]),
 
-            # Caso 3: Mistura texto/número
+            # Case 3: Text/number mix
             (["a10", "a2", "a1", "b1", "a20"],
              ["a1", "a2", "a10", "a20", "b1"])
         ]
@@ -111,11 +151,9 @@ class TestChapterParserMethods:
         assert result == "3"
 
     def test_natural_sort_key__edge_cases(self):
-        # Teste casos extremos
         assert self.parser.natural_sort_key("") == [""]
         assert self.parser.natural_sort_key("123") == ["", 123, ""]
         assert self.parser.natural_sort_key("abc") == ["abc"]
-        
-        # Números no meio
+
         result = self.parser.natural_sort_key("chapter5page10")
         assert result == ["chapter", 5, "page", 10, ""]
